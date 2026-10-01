@@ -53,7 +53,7 @@ export const practices: Practice[] = [
     thesis:
       'The proof is in what was led — programs, teams, and pictures that had to survive a hard subject.',
     lead: true,
-    preview: '/studio/index-creative-direction.jpg',
+    preview: '/studio/index-creative-direction.jpg?v=2',
     previewAlt: 'A studio light, barn door open, after the transformation.',
   },
   {

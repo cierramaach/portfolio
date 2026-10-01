@@ -164,9 +164,34 @@ export function NssiDigitalPresencePage() {
         </div>
       </section>
 
-      <section className="study-chapter study-chapter-problem">
+      <section className="study-chapter study-chapter-problem study-explore">
         <header className="study-chapter-head">
-          <p className="study-kicker">04 / The Ecosystem</p>
+          <p className="study-kicker">04 / Explore the work</p>
+          <h2 className="study-title">Explore the work.</h2>
+        </header>
+        <ul className="study-channels">
+          {nssiChannels.map((channel) => (
+            <li key={channel.label}>
+              <a href={channel.href} target="_blank" rel="noreferrer">
+                {channel.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <div className="study-chapter-frame study-chapter-frame-strip nssi-ecosystem-lead">
+          <Still
+            src={`${youtube.src}?v=2`}
+            alt={youtube.alt}
+            fill
+            contain
+            parallax={false}
+          />
+        </div>
+      </section>
+
+      <section className="study-chapter study-chapter-problem nssi-ecosystem">
+        <header className="study-chapter-head">
+          <p className="study-kicker">05 / The Ecosystem</p>
           <h2 className="study-title">
             <span>From channels</span>
             <span>to an ecosystem.</span>
@@ -204,31 +229,6 @@ export function NssiDigitalPresencePage() {
             </p>
           </div>
         </div>
-        <div className="study-chapter-frame study-chapter-frame-strip">
-          <Still
-            src={youtube.src}
-            alt={youtube.alt}
-            ticks={['Ecosystem']}
-            fill
-            parallax={false}
-          />
-        </div>
-      </section>
-
-      <section className="study-chapter study-chapter-problem study-explore">
-        <header className="study-chapter-head">
-          <p className="study-kicker">05 / Explore the work</p>
-          <h2 className="study-title">Explore the work.</h2>
-        </header>
-        <ul className="study-channels">
-          {nssiChannels.map((channel) => (
-            <li key={channel.label}>
-              <a href={channel.href} target="_blank" rel="noreferrer">
-                {channel.label}
-              </a>
-            </li>
-          ))}
-        </ul>
       </section>
 
       <nav className="study-foot" aria-label="Case study">

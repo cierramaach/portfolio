@@ -259,7 +259,6 @@ export function MakingSpacePage() {
             label={afterC.label}
             code={afterC.code}
             fill
-            soft
             parallax={false}
           />
         </div>

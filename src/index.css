@@ -933,6 +933,10 @@ a.close-link:focus-visible {
   background: var(--aperture);
 }
 
+.still-video::-internal-media-controls-download-button {
+  display: none;
+}
+
 .still-video-cut .still-ticks {
   top: 0;
   right: auto;
@@ -2021,6 +2025,10 @@ html.study-dark body {
   min-height: 0;
 }
 
+.still-reel {
+  scroll-margin-top: calc(var(--bar) + 0.75rem);
+}
+
 .study-spread-photo .still-reel .still-frame,
 .study-spread-reverse .study-spread-photo .still-reel .still-frame {
   -webkit-mask-image: none;
@@ -2045,6 +2053,59 @@ html.study-dark body {
 
 .still-reel-img.is-leaving {
   z-index: 0;
+}
+
+.still-reel-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 2.85rem;
+  height: 4.25rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgb(244 243 240 / 0.38);
+  cursor: pointer;
+  translate: 0 -50%;
+  filter: drop-shadow(0 1px 10px rgb(16 15 13 / 0.55));
+  transition: color 180ms ease;
+}
+
+.still-reel-prev {
+  left: 0.2rem;
+}
+
+.still-reel-next {
+  right: 0.2rem;
+}
+
+.still-reel-nav svg {
+  width: 1.15rem;
+  height: 1.85rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  pointer-events: none;
+}
+
+.still-reel-nav:hover,
+.still-reel-nav:focus-visible {
+  color: rgb(244 243 240 / 0.86);
+}
+
+.still-reel-nav:focus-visible {
+  outline: 1px solid rgb(244 243 240 / 0.45);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .still-reel-img {
+    transition: none;
+  }
 }
 
 .study-chapter-frame .still.still-fill .still-frame {
@@ -2265,13 +2326,27 @@ html.study-dark body {
   object-fit: cover;
 }
 
-.study-explore {
-  padding-top: clamp(2.25rem, 5vh, 3.75rem);
-  padding-bottom: 6vh;
+.nssi-ecosystem-lead {
+  margin-top: 1.35rem;
+  margin-bottom: 0;
 }
 
-.study-chapter-problem:has(+ .study-explore) {
-  padding-bottom: 0.85rem;
+.nssi-ecosystem-lead .still-frame,
+.nssi-ecosystem-lead .still.still-fill .still-frame {
+  aspect-ratio: 16 / 3;
+}
+
+.nssi-ecosystem-lead .still-img {
+  object-fit: contain;
+}
+
+.study-explore {
+  padding-top: clamp(2.25rem, 5vh, 3.75rem);
+  padding-bottom: 1.5rem;
+}
+
+.nssi-ecosystem {
+  padding-top: clamp(2rem, 4.5vh, 3.25rem);
 }
 
 .study-explore .study-title {
@@ -2608,7 +2683,7 @@ html.study-dark body {
 
   .study-explore {
     padding-top: clamp(1.75rem, 4vh, 2.75rem);
-    padding-bottom: 5vh;
+    padding-bottom: 1.25rem;
   }
 
   .study-spread-lead,

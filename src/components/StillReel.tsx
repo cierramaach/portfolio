@@ -13,6 +13,18 @@ type StillReelProps = {
 
 const FADE_MS = 1000
 
+function Chevron({ dir }: { dir: 'prev' | 'next' }) {
+  return (
+    <svg viewBox="0 0 24 36" aria-hidden="true">
+      {dir === 'prev' ? (
+        <path d="M16 3 6 18l10 15" />
+      ) : (
+        <path d="M8 3l10 15L8 33" />
+      )}
+    </svg>
+  )
+}
+
 export function StillReel({
   frames,
   ticks,
@@ -20,6 +32,12 @@ export function StillReel({
 }: StillReelProps) {
   const frameRef = useRef<HTMLDivElement>(null)
   const activeRef = useRef(0)
+  const fadeTimerRef = useRef(0)
+  const holdTimerRef = useRef(0)
+  const visibleRef = useRef(false)
+  const reduceRef = useRef(false)
+  const goRef = useRef<(delta: number) => void>(() => {})
+  const restartHoldRef = useRef<() => void>(() => {})
   const [active, setActive] = useState(0)
   const [leaving, setLeaving] = useState<number | null>(null)
 
@@ -27,41 +45,52 @@ export function StillReel({
     activeRef.current = active
   }, [active])
 
+  const go = (delta: number) => {
+    const count = frames.length
+    if (count < 2) return
+    const from = activeRef.current
+    const next = (from + delta + count) % count
+    if (next === from) return
+    setLeaving(from)
+    setActive(next)
+    window.clearTimeout(fadeTimerRef.current)
+    fadeTimerRef.current = window.setTimeout(() => {
+      setLeaving((current) => (current === from ? null : current))
+    }, FADE_MS)
+  }
+
+  goRef.current = go
+
   useEffect(() => {
     if (frames.length < 2) return
 
     const node = frameRef.current
     if (!node) return
 
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduce) return
+    reduceRef.current = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches
 
-    let holdTimer = 0
-    let fadeTimer = 0
-
-    const advance = () => {
-      const from = activeRef.current
-      const next = (from + 1) % frames.length
-      setLeaving(from)
-      setActive(next)
-      window.clearTimeout(fadeTimer)
-      fadeTimer = window.setTimeout(() => {
-        setLeaving((current) => (current === from ? null : current))
-      }, FADE_MS)
+    const stop = () => {
+      window.clearInterval(holdTimerRef.current)
+      holdTimerRef.current = 0
     }
 
     const start = () => {
-      if (holdTimer) return
-      holdTimer = window.setInterval(advance, holdMs)
+      if (reduceRef.current || holdTimerRef.current) return
+      holdTimerRef.current = window.setInterval(() => {
+        goRef.current(1)
+      }, holdMs)
     }
-    const stop = () => {
-      window.clearInterval(holdTimer)
-      window.clearTimeout(fadeTimer)
-      holdTimer = 0
+
+    restartHoldRef.current = () => {
+      stop()
+      if (visibleRef.current) start()
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
+        visibleRef.current = entry.isIntersecting
         if (entry.isIntersecting) start()
         else stop()
       },
@@ -71,11 +100,18 @@ export function StillReel({
 
     return () => {
       stop()
+      window.clearTimeout(fadeTimerRef.current)
       observer.disconnect()
     }
   }, [frames.length, holdMs])
 
   if (!frames.length) return null
+
+  const canNav = frames.length > 1
+  const handleNav = (delta: number) => {
+    go(delta)
+    restartHoldRef.current()
+  }
 
   return (
     <figure className="still still-fill still-reel">
@@ -100,6 +136,26 @@ export function StillReel({
             />
           )
         })}
+        {canNav ? (
+          <>
+            <button
+              type="button"
+              className="still-reel-nav still-reel-prev"
+              aria-label="Previous still"
+              onClick={() => handleNav(-1)}
+            >
+              <Chevron dir="prev" />
+            </button>
+            <button
+              type="button"
+              className="still-reel-nav still-reel-next"
+              aria-label="Next still"
+              onClick={() => handleNav(1)}
+            >
+              <Chevron dir="next" />
+            </button>
+          </>
+        ) : null}
         {ticks?.length ? (
           <ol className="still-ticks">
             {ticks.map((tick) => (

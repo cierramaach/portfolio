@@ -82,8 +82,11 @@ export function StillVideo({
           loop={loop}
           playsInline
           controls
+          controlsList="nodownload"
+          disablePictureInPicture
           preload={preload}
           aria-label={caption || 'Visualization'}
+          onContextMenu={(event) => event.preventDefault()}
         />
         {caption ? (
           <ol className="still-ticks">
