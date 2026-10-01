@@ -1,5 +1,5 @@
 export const spaceLawTrailer = {
-  src: '/space-law/trailer.mp4',
+  src: '/space-law/trailer.mp4?v=2',
   poster: '/space-law/poster.jpg',
   label: 'Trailer',
 }
