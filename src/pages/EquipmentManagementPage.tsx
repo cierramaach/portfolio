@@ -84,13 +84,13 @@ export function EquipmentManagementPage() {
         </section>
 
         <section className="study-chapter study-chapter-problem">
-          <header className="study-chapter-head">
-            <p className="study-kicker">02 / The Problem</p>
-            <h2 className="study-title">
-              <span>Where is it?</span>
-            </h2>
-          </header>
-          <div className="study-magazine">
+          <div className="study-magazine study-magazine-flow">
+            <header className="study-mast">
+              <p className="study-kicker">02 / The Problem</p>
+              <h2 className="study-title">
+                <span>Where is it?</span>
+              </h2>
+            </header>
             <div className="study-copy">
               <p>
                 As the team grew, so did the equipment we were responsible
@@ -108,8 +108,6 @@ export function EquipmentManagementPage() {
                   to use, and how to get it back.
                 </strong>
               </p>
-            </div>
-            <div className="study-copy">
               <p>
                 For a small team, an informal approach can work. You
                 remember where things live. You ask a teammate if they’ve
@@ -130,8 +128,6 @@ export function EquipmentManagementPage() {
                 equipment, and uncertainty around availability were becoming
                 increasingly likely.
               </p>
-            </div>
-            <div className="study-copy">
               <p>
                 There was another consideration: this wasn’t privately owned
                 production gear. It was{' '}
@@ -156,10 +152,7 @@ export function EquipmentManagementPage() {
           </div>
           <div className="study-chapter-continue">
             <header className="study-chapter-head">
-              <h2 className="study-title">
-                <span>The</span>
-                <span>Constraint.</span>
-              </h2>
+              <h2 className="study-title study-title-line">The Constraint.</h2>
             </header>
             <div className="study-magazine">
               <div className="study-copy">
@@ -208,22 +201,31 @@ export function EquipmentManagementPage() {
           <div className="study-chapter-frame">
             <StillReel frames={problemReel} ticks={['Before']} />
           </div>
-          <ul className="study-notes">
-            <li>What we had</li>
-            <li>Where it was</li>
-            <li>Who had it</li>
-            <li>Whether it was ready</li>
-          </ul>
+          <ol className="study-outcomes study-outcomes-four">
+            <li>
+              <span>95+</span>
+              Assets
+            </li>
+            <li>
+              <span>25+</span>
+              Accessories
+            </li>
+            <li>
+              <span>QR</span>
+              QR-coded equipment
+            </li>
+            <li>
+              <span>In / Out</span>
+              Check-in / check-out
+            </li>
+          </ol>
         </section>
       </div>
 
       <section className="study-spread study-spread-intervene">
         <div className="study-spread-copy">
           <p className="study-kicker">03 / The Approach</p>
-          <h2 className="study-title">
-            <span>Making it</span>
-            <span>work.</span>
-          </h2>
+          <h2 className="study-title study-title-line">Making it work.</h2>
           <div className="study-copy">
             <p>
               We weren’t starting from nothing. We had extensive equipment
@@ -290,7 +292,7 @@ export function EquipmentManagementPage() {
         </div>
       </section>
 
-      <section className="study-spread study-spread-reverse">
+      <section className="study-spread study-spread-reverse eq-physical">
         <div className="study-spread-photo">
           <Still
             src={qrHead.src}
@@ -302,10 +304,7 @@ export function EquipmentManagementPage() {
         </div>
         <div className="study-spread-copy">
           <p className="study-kicker">04 / Make it physical</p>
-          <h2 className="study-title">
-            <span>Make it</span>
-            <span>physical.</span>
-          </h2>
+          <h2 className="study-title study-title-line">Make it physical.</h2>
           <div className="study-copy">
             <p>The system couldn’t live only on a screen.</p>
             <p>The equipment needed a connection to it.</p>
@@ -379,15 +378,15 @@ export function EquipmentManagementPage() {
         </div>
       </section>
 
-      <section className="study-chapter study-chapter-problem">
-        <header className="study-chapter-head">
-          <p className="study-kicker">05 / From stuff to infrastructure</p>
-          <h2 className="study-title">
-            <span>From stuff</span>
-            <span>to infrastructure.</span>
-          </h2>
-        </header>
-        <div className="study-magazine">
+      <section className="study-chapter study-chapter-infra">
+        <div className="study-chapter-infra-copy">
+          <header className="study-chapter-head">
+            <p className="study-kicker">05 / From stuff to infrastructure</p>
+            <h2 className="study-title">
+              <span>From stuff</span>
+              <span>to infrastructure.</span>
+            </h2>
+          </header>
           <div className="study-copy">
             <p>
               This was part of a larger shift in how we thought about the
@@ -395,37 +394,20 @@ export function EquipmentManagementPage() {
             </p>
             <p>We weren’t just accumulating equipment anymore.</p>
             <p>We were building a production capability.</p>
-          </div>
-          <div className="study-copy">
-            <p>That meant the physical space needed to be intentional.</p>
-            <p>The equipment needed homes.</p>
-            <p>The inventory needed structure.</p>
-          </div>
-          <div className="study-copy">
             <p>
-              The team needed a way to access what we had without relying on
-              one or two people knowing where everything was.
+              What started as a practical problem became a system that gave
+              the team a clearer picture of its production resources.
             </p>
             <p>
-              The equipment management system became part of that
-              infrastructure. It turned a collection of gear into a
-              functioning production library.
+              The knowledge stopped living exclusively in people’s heads.
+              The team could see what we had. People could find what they
+              needed. Equipment had a place. And the production capability
+              could grow without the management system becoming another
+              bottleneck.
             </p>
           </div>
         </div>
-        <div className="study-copy study-chapter-coda">
-          <p>
-            What started as a practical problem became a system that gave
-            the team a clearer picture of its production resources.
-          </p>
-          <p>
-            The knowledge stopped living exclusively in people’s heads. The
-            team could see what we had. People could find what they needed.
-            Equipment had a place. And the production capability could grow
-            without the management system becoming another bottleneck.
-          </p>
-        </div>
-        <div className="study-chapter-frame">
+        <div className="study-chapter-infra-photo">
           <Still
             src={library.src}
             alt={library.alt}
@@ -434,27 +416,6 @@ export function EquipmentManagementPage() {
             parallax={false}
           />
         </div>
-      </section>
-
-      <section className="study-result">
-        <ol className="study-outcomes study-outcomes-four">
-          <li>
-            <span>95+</span>
-            Assets
-          </li>
-          <li>
-            <span>25+</span>
-            Accessories
-          </li>
-          <li>
-            <span>QR</span>
-            QR-coded equipment
-          </li>
-          <li>
-            <span>In / Out</span>
-            Check-in / check-out
-          </li>
-        </ol>
       </section>
 
       <nav className="study-foot" aria-label="Case study">

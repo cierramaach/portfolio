@@ -317,8 +317,8 @@ export function MakingSpacePage() {
       </section>
 
       <section className="study-end">
-        <p className="study-philosophy">
-          I built the studio for the team we were becoming.
+        <p className="study-philosophy study-philosophy-line">
+          A studio built for the team we were becoming.
         </p>
       </section>
 

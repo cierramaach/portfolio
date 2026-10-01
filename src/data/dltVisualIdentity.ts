@@ -24,8 +24,8 @@ export const dltStills = {
     label: 'Pamphlet',
   },
   tiers: {
-    src: '/dlt/curriculum-tiers.jpg',
-    alt: 'Curriculum development tiers for the Digital Learning Team.',
+    src: '/dlt/curriculum-tiers.png',
+    alt: 'Curriculum development tiers: Basic, Enhanced, Responsive, and Immersive, with timeline ranges.',
     label: 'Curriculum tiers',
   },
   video: {

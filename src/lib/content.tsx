@@ -59,7 +59,14 @@ function readContent(): SiteContent {
   try {
     const saved = JSON.parse(raw) as Partial<SiteContent>
     const next = seed()
-    if (saved.identity) next.identity = { ...next.identity, ...saved.identity }
+    if (saved.identity) {
+      next.identity = {
+        ...next.identity,
+        ...saved.identity,
+        blurbBreak: seedIdentity.blurbBreak,
+        blurbContinue: seedIdentity.blurbContinue,
+      }
+    }
     if (saved.contact) {
       next.contact = {
         ...next.contact,

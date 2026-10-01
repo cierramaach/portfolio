@@ -24,6 +24,17 @@ function Redirect({ to }: { to: string }) {
   return null
 }
 
+function Alias({ to, children }: { to: string; children: ReactNode }) {
+  useEffect(() => {
+    const url = new URL(to, window.location.origin)
+    const next = `${url.pathname}${url.hash}`
+    if (`${window.location.pathname}${window.location.hash}` !== next) {
+      window.history.replaceState({}, '', next)
+    }
+  }, [to])
+  return children
+}
+
 function route(path: string): ReactNode {
   if (path === '/') return <HomePage />
   if (path === '/edit') return <EditPage />
@@ -32,7 +43,11 @@ function route(path: string): ReactNode {
   }
   if (path === '/creative-direction/making-space') return <MakingSpacePage />
   if (path === '/creative-direction/space-law-game') {
-    return <Redirect to="/creative-direction/equipment-management" />
+    return (
+      <Alias to="/experience/space-law-game">
+        <SpaceLawGamePage />
+      </Alias>
+    )
   }
   if (path === '/creative-direction/equipment-management') {
     return <EquipmentManagementPage />

@@ -21,10 +21,7 @@ export function SpaceLawGamePage() {
       <section className="slg-spread" aria-label="Space Law Game trailer">
         <div className="slg-copy">
           <p className="study-kicker">02 / Experience / 3D / Interactive</p>
-          <h1 className="study-title">
-            <span>Space Law</span>
-            <span>Game</span>
-          </h1>
+          <h1 className="study-title study-title-line">Space Law Game</h1>
           <p className="study-deck study-deck-rule">Trailer.</p>
         </div>
         <div className="slg-stage">

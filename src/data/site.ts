@@ -32,8 +32,8 @@ export const identity = {
   nameGiven: 'Cierra',
   nameFamily: 'Maach',
   roles: ['Creative Director', 'Creative Strategy', 'Visual Storyteller'],
-  blurbBreak: 'Visual storytelling for complex, high-stakes',
-  blurbContinue: 'ideas. Built with precision. Designed to hold up.',
+  blurbBreak: 'Visual storytelling for complex ideas,',
+  blurbContinue: 'ambitious teams, and work that matters.',
 }
 
 export const contact = {

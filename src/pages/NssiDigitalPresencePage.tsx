@@ -215,91 +215,20 @@ export function NssiDigitalPresencePage() {
         </div>
       </section>
 
-      <section className="study-result">
-        <div className="study-result-pair">
-          <div>
-            <p className="study-kicker">05 / The Result</p>
-            <h2 className="study-title">
-              <span>The</span>
-              <span>Result.</span>
-            </h2>
-          </div>
-          <div className="study-copy">
-            <p>
-              The transformation wasn't simply an increase in posts or the
-              addition of new platforms.
-            </p>
-            <p>
-              A recurring leadership request had become an institutional
-              capability.
-            </p>
-            <p>
-              The organization now had dedicated creative resources,
-              established visual standards, repeatable workflows, and a more
-              consistent presence across its public-facing channels.
-            </p>
-            <p>
-              On LinkedIn alone, the channel grew toward 9,000 followers, with
-              continued average growth of approximately 29–40 followers per
-              week.
-            </p>
-            <p>
-              More importantly, the work established a foundation that could
-              persist beyond any individual leadership rotation.
-            </p>
-          </div>
-        </div>
-        <ol className="study-outcomes">
-          <li>
-            <span>Toward 9,000</span>
-            LinkedIn
-          </li>
-          <li>
-            <span>29–40</span>
-            Followers per week
-          </li>
-          <li>
-            <span>A foundation</span>
-            Beyond any leadership rotation
-          </li>
-        </ol>
-      </section>
-
-      <section className="study-chapter study-chapter-problem">
+      <section className="study-chapter study-chapter-problem study-explore">
         <header className="study-chapter-head">
-          <p className="study-kicker">06 / Explore the work</p>
-          <h2 className="study-title">
-            <span>Explore</span>
-            <span>the work.</span>
-          </h2>
+          <p className="study-kicker">05 / Explore the work</p>
+          <h2 className="study-title">Explore the work.</h2>
         </header>
-        <div className="study-magazine">
-          <div className="study-copy">
-            <p>The work is still live across NSSI's public channels.</p>
-          </div>
-          <div className="study-copy">
-            <p>
-              Explore the channels to see the visual language, recurring
-              content, and evolution of NSSI's digital presence firsthand.
-            </p>
-          </div>
-          <ul className="study-channels">
-            {nssiChannels.map((channel) => (
-              <li key={channel.label}>
-                <a href={channel.href} target="_blank" rel="noreferrer">
-                  {channel.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="study-end">
-        <p className="study-philosophy">
-          The objective was never just to create more content. It was to
-          build the system that made sustained communication possible.
-        </p>
+        <ul className="study-channels">
+          {nssiChannels.map((channel) => (
+            <li key={channel.label}>
+              <a href={channel.href} target="_blank" rel="noreferrer">
+                {channel.label}
+              </a>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <nav className="study-foot" aria-label="Case study">

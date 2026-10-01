@@ -39,16 +39,6 @@ export function DltVisualIdentityPage() {
               capability wasn’t always immediately visible from the outside.
             </p>
             <p>I believed that needed to change.</p>
-          </div>
-        </div>
-        <figure className="dlt-mark">
-          <img src={mark.src} alt={mark.alt} />
-        </figure>
-      </section>
-
-      <section className="study-chapter study-chapter-problem dlt-essay">
-        <div className="study-magazine dlt-essay-lead">
-          <div className="study-copy">
             <p>
               Leadership changes. Priorities shift. Technology evolves. And
               when resources are being evaluated, a large creative team can
@@ -61,8 +51,6 @@ export function DltVisualIdentityPage() {
               that reflected the quality, range, and thoughtfulness of the
               work already being produced.
             </p>
-          </div>
-          <div className="study-copy">
             <p>So I developed the DLT brand.</p>
             <p>
               I approached it as more than a logo exercise. I wanted to
@@ -70,45 +58,26 @@ export function DltVisualIdentityPage() {
               presented itself internally and establish a recognizable
               design mark within NSSI.
             </p>
-          </div>
-        </div>
-        <div className="study-copy dlt-turn">
-          <p>
-            The creative direction balanced two things that I felt were
-            essential to our identity:
-          </p>
-        </div>
-        <div className="study-magazine dlt-balance">
-          <div className="study-copy">
             <p>
-              <strong>Creative excellence.</strong>
+              The creative direction balanced two things that I felt were
+              essential to our identity:
             </p>
             <p>
-              A polished, contemporary, and intentional visual language that
-              reflected the caliber of our work.
-            </p>
-          </div>
-          <div className="study-copy">
-            <p>
-              <strong>Mission expertise.</strong>
+              <strong>Creative excellence.</strong> A polished,
+              contemporary, and intentional visual language that reflected
+              the caliber of our work.
             </p>
             <p>
-              A design language grounded in the complexity of the subjects
-              we worked with and the depth of understanding required to
-              translate them effectively.
+              <strong>Mission expertise.</strong> A design language grounded
+              in the complexity of the subjects we worked with and the depth
+              of understanding required to translate them effectively.
             </p>
-          </div>
-        </div>
-        <div className="study-magazine">
-          <div className="study-copy">
             <p>
               The brand became a way to unify a growing team under something
               recognizable — a visual banner that could move across
               presentations, digital experiences, social media, learning
               products, and other team deliverables.
             </p>
-          </div>
-          <div className="study-copy">
             <p>
               I wasn’t trying to make the team look bigger than it was.
             </p>
@@ -116,8 +85,6 @@ export function DltVisualIdentityPage() {
               I was trying to make the value of what we had built{' '}
               <strong>easier to see</strong>.
             </p>
-          </div>
-          <div className="study-copy">
             <p>
               And that, to me, is where the branding became strategic: the
               identity didn’t replace the work.
@@ -127,6 +94,9 @@ export function DltVisualIdentityPage() {
             </p>
           </div>
         </div>
+        <figure className="dlt-mark">
+          <img src={mark.src} alt={mark.alt} />
+        </figure>
       </section>
 
       <figure className="dlt-plate dlt-plate-white">
