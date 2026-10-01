@@ -13,7 +13,7 @@ export type StillSlot = {
 export const makingSpaceStills = {
   hero: {
     id: 'hero',
-    src: '/studio/after-hero-v3.jpg?v=2',
+    src: '/studio/after-hero-v3.jpg?v=3',
     alt: 'The studio after transformation: two chairs on a controlled blue cyclorama.',
     label: 'After',
     caption: 'The studio as it stands. A production environment built around the work.',

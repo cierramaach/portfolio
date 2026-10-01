@@ -113,7 +113,7 @@ export const efforts: Effort[] = [
     outcome: 'More flexible shooting. Faster setups. Broader production range.',
     lead: true,
     path: '/creative-direction/making-space',
-    src: '/studio/after-hero-v3.jpg',
+    src: '/studio/after-hero-v3.jpg?v=3',
     alt: 'The studio after transformation.',
   },
   {

@@ -2357,10 +2357,11 @@ html.study-dark body {
 
 .study-channels {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 0.15rem clamp(1.35rem, 3.2vw, 2.85rem);
+  flex-wrap: nowrap;
+  gap: 0.35rem clamp(2rem, 5.5vw, 6.5rem);
+  width: 100%;
   margin: 0.55rem 0 0;
   padding: 0.2rem 0 0;
   list-style: none;
@@ -2684,6 +2685,12 @@ html.study-dark body {
   .study-explore {
     padding-top: clamp(1.75rem, 4vh, 2.75rem);
     padding-bottom: 1.25rem;
+  }
+
+  .study-channels {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.45rem 1.85rem;
   }
 
   .study-spread-lead,
