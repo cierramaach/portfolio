@@ -180,6 +180,10 @@ export function DltVisualIdentityPage() {
         <Link className="study-back" to="/#index">
           Back to Index
         </Link>
+        <Link className="study-next" to="/experiments/hennessy">
+          <span className="study-next-index">03 / Next initiative</span>
+          <span className="study-next-title">Hennessy</span>
+        </Link>
       </nav>
     </main>
   )

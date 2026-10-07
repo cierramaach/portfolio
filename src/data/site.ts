@@ -202,4 +202,18 @@ export const efforts: Effort[] = [
     src: '/dlt/logo-system.jpg',
     alt: 'Digital Learning Team logo system.',
   },
+  {
+    id: 'hennessy',
+    index: '03.2',
+    title: 'Hennessy',
+    purpose: 'Composite by me. Design by Natalia Mrozek.',
+    role: '',
+    domain: '',
+    year: '',
+    scale: '',
+    outcome: '',
+    path: '/experiments/hennessy',
+    src: '/hennessy/poster.jpg',
+    alt: 'Hennessy Paradis composite on the LA Moxy billboard.',
+  },
 ]

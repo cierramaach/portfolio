@@ -33,7 +33,7 @@ export function SpaceLawGamePage() {
             loop={false}
             muted={false}
             autoPlayInView={false}
-            preload="metadata"
+            preload="none"
           />
         </div>
       </section>

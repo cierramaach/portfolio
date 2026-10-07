@@ -12,6 +12,7 @@ import { EquipmentManagementPage } from './pages/EquipmentManagementPage'
 import { MakingSpacePage } from './pages/MakingSpacePage'
 import { NssiDigitalPresencePage } from './pages/NssiDigitalPresencePage'
 import { DltVisualIdentityPage } from './pages/DltVisualIdentityPage'
+import { HennessyPage } from './pages/HennessyPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { PracticePage } from './pages/PracticePage'
 
@@ -75,6 +76,9 @@ function route(path: string): ReactNode {
   }
   if (path === '/experiments/dlt-visual-identity') {
     return <DltVisualIdentityPage />
+  }
+  if (path === '/experiments/hennessy') {
+    return <HennessyPage />
   }
   if (path === '/blog') return <PracticePage slug="blog" />
   return <NotFoundPage />

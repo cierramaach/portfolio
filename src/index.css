@@ -17,6 +17,11 @@
   --pad: clamp(1.25rem, 3.2vw, 2.75rem);
   --bar: 4.35rem;
   --bar-pad: clamp(1.5rem, 5.5vw, 4.5rem);
+  --page: 120rem;
+  --page-inline: max(
+    var(--bar-pad),
+    calc((100% - var(--page)) / 2 + var(--bar-pad))
+  );
   --ease: 160ms linear;
 
   color-scheme: light;
@@ -35,6 +40,7 @@
 html {
   scroll-behavior: auto;
   overscroll-behavior-y: none;
+  overflow-x: hidden;
   background: var(--paper);
 }
 
@@ -171,8 +177,10 @@ main {
   display: grid;
   grid-template-columns: 1fr;
   align-items: stretch;
+  width: min(100%, var(--page));
   min-height: 100svh;
   margin-top: calc(-1 * var(--bar));
+  margin-inline: auto;
   padding-top: var(--bar);
   overflow: hidden;
   background-color: var(--hero-field);
@@ -245,7 +253,7 @@ main {
   align-items: center;
   justify-content: space-between;
   min-height: var(--bar);
-  padding: 1.15rem var(--bar-pad);
+  padding: 1.15rem var(--page-inline);
   background: var(--night);
   color: var(--bar-ink);
 }
@@ -615,7 +623,9 @@ main {
 /* --- Book jacket --------------------------------------------------------- */
 
 .coda {
+  width: min(100%, var(--page));
   min-height: auto;
+  margin-inline: auto;
 }
 
 .jacket {
@@ -720,6 +730,8 @@ a.close-link:focus-visible {
 /* --- Index --------------------------------------------------------------- */
 
 .index {
+  width: min(100%, var(--page));
+  margin-inline: auto;
   padding: 6vh clamp(1.4rem, 7.5vw, 7.25rem) 12vh;
   background: var(--paper);
   scroll-margin-top: var(--bar);
@@ -792,7 +804,7 @@ a.close-link:focus-visible {
   line-height: 1.5;
 }
 
-@media (min-width: 861px) {
+@media (min-width: 1101px) {
   .index-copy {
     container-type: inline-size;
   }
@@ -804,6 +816,13 @@ a.close-link:focus-visible {
 
   .index-line {
     white-space: nowrap;
+  }
+}
+
+@container (max-width: 26rem) {
+  .index-title,
+  .index-line {
+    white-space: normal;
   }
 }
 
@@ -852,13 +871,15 @@ a.close-link:focus-visible {
   align-items: center;
   justify-content: space-between;
   min-height: var(--bar);
-  padding: 1.15rem var(--bar-pad);
+  padding: 1.15rem var(--page-inline);
   border-bottom: 0;
   background: var(--night);
   color: var(--bar-ink);
 }
 
 .page-intro {
+  width: min(100%, var(--page));
+  margin-inline: auto;
   padding: 10vh clamp(1.4rem, 7.5vw, 7.25rem) 8vh;
 }
 
@@ -893,6 +914,8 @@ a.close-link:focus-visible {
 }
 
 .page-hold {
+  width: min(100%, var(--page));
+  margin-inline: auto;
   padding: 0 clamp(1.4rem, 7.5vw, 7.25rem) 18vh;
 }
 
@@ -929,6 +952,8 @@ a.close-link:focus-visible {
   inset: 0;
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   background: var(--aperture);
 }
@@ -1320,11 +1345,16 @@ html.study-dark body {
 }
 
 .study .page-bar {
-  padding-left: var(--bar-pad);
-  padding-right: var(--bar-pad);
+  padding-left: var(--page-inline);
+  padding-right: var(--page-inline);
   border-bottom: 0;
   background: var(--night);
   color: var(--bar-ink);
+}
+
+.study > *:not(.page-bar) {
+  width: min(100%, var(--page));
+  margin-inline: auto;
 }
 
 .study ::selection {
@@ -1334,8 +1364,19 @@ html.study-dark body {
 
 .study-spread {
   display: grid;
-  grid-template-columns: minmax(18rem, 38vw) minmax(0, 1fr);
+  grid-template-columns: minmax(18rem, 38%) minmax(0, 1fr);
   min-height: 42rem;
+}
+
+.study-spread-copy,
+.study-spread-photo,
+.index-copy,
+.index-still,
+.dlt-mark,
+.slg-copy,
+.slg-stage,
+.study-chapter-head {
+  min-width: 0;
 }
 
 .study-pin {
@@ -1356,7 +1397,7 @@ html.study-dark body {
 }
 
 .study-spread-reverse {
-  grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 40vw);
+  grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 40%);
 }
 
 .eq-physical .study-copy {
@@ -1556,6 +1597,8 @@ html.study-dark body {
 }
 
 .slg-copy {
+  position: relative;
+  z-index: 2;
   flex: 0 0 auto;
   padding: 3.6vh clamp(1.5rem, 4vw, 3.25rem) 2.15rem;
 }
@@ -1577,6 +1620,29 @@ html.study-dark body {
   padding-bottom: 0.95rem;
 }
 
+.slg-copy .hen-deck,
+.hen-deck {
+  max-width: 42ch;
+}
+
+.hen-banner {
+  padding: 0 clamp(1.15rem, 2.8vw, 2.25rem) 3.25rem;
+}
+
+.hen-banner .still {
+  width: 100%;
+}
+
+.hen-banner .still-frame {
+  width: 100%;
+  aspect-ratio: 3840 / 632;
+  background: #000;
+}
+
+.hen-banner .still-img {
+  object-fit: contain;
+}
+
 .slg-stage {
   flex: 1 1 auto;
   display: flex;
@@ -1584,6 +1650,7 @@ html.study-dark body {
   align-items: center;
   width: 100%;
   min-height: 0;
+  overflow: hidden;
   padding: 0.65rem clamp(1.15rem, 2.8vw, 2.25rem) 2.35rem;
 }
 
@@ -1606,6 +1673,14 @@ html.study-dark body {
 .study-chapter-head,
 .study-chapter-text {
   align-self: start;
+  min-width: 0;
+}
+
+.study-chapter-head,
+.slg-copy,
+.study-mast {
+  container-type: inline-size;
+  container-name: copy;
 }
 
 .study-chapter .study-copy {
@@ -1625,6 +1700,19 @@ html.study-dark body {
   z-index: 2;
   padding-bottom: 8vh;
   background: var(--paper);
+}
+
+.study-chapter-problem > .study-chapter-head {
+  min-width: 0;
+  width: 100%;
+}
+
+.study-chapter-problem .study-title {
+  max-width: none;
+}
+
+.study-chapter-problem .study-title span {
+  white-space: nowrap;
 }
 
 .study-magazine {
@@ -1732,6 +1820,9 @@ html.study-dark body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-width: 0;
+  container-type: inline-size;
+  container-name: copy;
   padding: 7vh clamp(1.6rem, 3.4vw, 3.25rem) 7vh clamp(1.5rem, 4vw, 3.25rem);
 }
 
@@ -1766,8 +1857,14 @@ html.study-dark body {
 
 .study-title-line {
   display: block;
-  max-width: none;
+  max-width: 100%;
   white-space: nowrap;
+}
+
+@container copy (max-width: 24rem) {
+  .study-title-line {
+    white-space: normal;
+  }
 }
 
 .study-deck,
@@ -1854,6 +1951,7 @@ html.study-dark body {
 .still-frame {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   background: var(--aperture);
 }
 
@@ -1975,6 +2073,11 @@ html.study-dark body {
   inset: 0;
   width: 100%;
   height: 100%;
+}
+
+.still-img,
+.still-video {
+  max-width: 100%;
 }
 
 .still-img {
@@ -2359,8 +2462,8 @@ html.study-dark body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: nowrap;
-  gap: 0.35rem clamp(2rem, 5.5vw, 6.5rem);
+  flex-wrap: wrap;
+  gap: 0.55rem clamp(2rem, 5.5vw, 6.5rem);
   width: 100%;
   margin: 0.55rem 0 0;
   padding: 0.2rem 0 0;
@@ -2488,19 +2591,19 @@ html.study-dark body {
 
 .study-foot {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 2rem;
-  padding: 1.5rem clamp(1.5rem, 4vw, 3.25rem) 2.4rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.7rem;
+  padding: 2.1rem clamp(1.5rem, 4vw, 3.25rem) 2.6rem;
   border-top: 1px solid var(--ink-rule);
 }
 
 .dlt-spread {
   align-items: start;
   min-height: 0;
-  grid-template-columns: minmax(22rem, 0.95fr) minmax(18rem, 1.05fr);
+  grid-template-columns: minmax(20rem, 38%) minmax(0, 1fr);
   justify-content: start;
-  column-gap: clamp(2rem, 4.5vw, 4.75rem);
+  column-gap: clamp(1.75rem, 4vw, 4.25rem);
 }
 
 .dlt-spread .study-spread-copy {
@@ -2532,17 +2635,21 @@ html.study-dark body {
   align-items: flex-start;
   justify-content: center;
   position: sticky;
-  top: calc(var(--bar) + 1.75rem);
+  top: calc(var(--bar) + 1.25rem);
   align-self: start;
+  width: 100%;
   margin: 0;
-  padding: 8vh clamp(1.5rem, 5vw, 4rem) 3.5vh 0;
+  padding: 6vh clamp(1.15rem, 3.2vw, 2.75rem) 4vh 0;
   background: transparent;
 }
 
 .dlt-mark img {
   display: block;
-  width: min(32rem, 42vw);
+  width: auto;
   height: auto;
+  max-width: 100%;
+  max-height: calc(100svh - var(--bar) - 5.5rem);
+  object-fit: contain;
 }
 
 .dlt-cut {
@@ -2630,18 +2737,17 @@ html.study-dark body {
 
 .study-foot-ends {
   display: flex;
-  align-items: flex-end;
-  gap: clamp(1.75rem, 4vw, 3.5rem);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.7rem;
+  width: 100%;
 }
 
-.study-next {
+.study-next,
+.study-prev {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  text-align: right;
-}
-
-.study-prev {
   text-align: left;
 }
 
@@ -2658,14 +2764,55 @@ html.study-dark body {
   font-size: clamp(1.85rem, 3.2vw, 2.7rem);
   font-weight: 500;
   letter-spacing: -0.02em;
-  line-height: 1;
+  line-height: 1.08;
 }
 
 .study-next:hover .study-next-title {
   color: var(--copper);
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1280px) {
+  .study-magazine {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .study-spread-intervene .study-magazine-flow,
+  .study-chapter-problem > .study-magazine-flow {
+    column-count: 2;
+  }
+
+  .dlt-mark {
+    padding: 5.5vh clamp(0.85rem, 2.4vw, 1.75rem) 3.5vh 0;
+  }
+
+  .dlt-mark img {
+    max-width: min(100%, 34vw);
+    max-height: min(calc(100svh - var(--bar) - 5rem), 34vw);
+  }
+}
+
+@media (max-width: 1100px) {
+  .index-feature,
+  .index-feature + .index-feature,
+  .index-feature:last-child {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'kicker'
+      'copy'
+      'still';
+    row-gap: 1.35rem;
+    padding: 3.25rem 0;
+  }
+
+  .index-title,
+  .index-line,
+  .study-title-line,
+  .study-explore .study-title,
+  .study-philosophy-line {
+    max-width: none;
+    white-space: normal;
+  }
+
   .study-spread,
   .study-spread-lead,
   .study-spread-reverse,
@@ -2754,29 +2901,46 @@ html.study-dark body {
     padding: 0 var(--pad) 2.5rem;
   }
 
+  .slg-stage .still,
   .slg-stage .still.still-fill,
   .slg-stage .still-frame,
   .slg-stage .still-fill .still-frame {
-    position: static;
+    position: relative;
     min-height: 0;
     width: 100%;
     height: auto;
+    max-width: 100%;
     max-height: none;
     aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  .dlt-spread {
+    grid-template-columns: minmax(12rem, 38%) minmax(0, 1fr);
+    min-height: 0;
   }
 
   .dlt-spread .study-title span {
     white-space: normal;
   }
 
+  .dlt-spread .study-spread-copy {
+    padding: 7vh var(--pad) 8vh var(--pad);
+  }
+
   .dlt-mark {
-    position: static;
-    justify-content: flex-start;
-    padding: 1.25rem var(--pad) 5vh;
+    position: sticky;
+    top: calc(var(--bar) + 1rem);
+    justify-content: center;
+    height: auto;
+    padding: 5vh 0.85rem 3vh 0;
   }
 
   .dlt-mark img {
-    width: min(22rem, 82vw);
+    width: auto;
+    height: auto;
+    max-width: min(100%, 30vw);
+    max-height: min(calc(100svh - var(--bar) - 4.5rem), 30vw);
   }
 
   .study-chapter-frame {
@@ -2828,20 +2992,6 @@ html.study-dark body {
     mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 100%);
   }
 
-  .study-foot {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .study-next {
-    text-align: left;
-  }
-
-  .study-foot-ends {
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-  }
 
   .study-bleed,
   .study-bleed .still,
