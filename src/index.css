@@ -1,15 +1,18 @@
 :root {
-  --night: #100f0d;
-  --paper: #edeae4;
-  --ink: #1a1917;
+  --ivory: #f1eee8;
+  --ink: #22211f;
+  --copper: #a7825d;
+  --slate: #697f91;
+  --silver: #d4d8d9;
+  --night: #22211f;
+  --paper: var(--ivory);
   --ink-mute: color-mix(in srgb, var(--ink) 72%, var(--paper));
   --ink-faint: color-mix(in srgb, var(--ink) 58%, var(--paper));
   --ink-rule: color-mix(in srgb, var(--ink) 14%, var(--paper));
   --aperture: #0b0b0b;
   --hold: color-mix(in srgb, var(--paper) 58%, transparent);
-  --hero: #edeae4;
-  --bar-ink: #edeae4;
-  --copper: #a88862;
+  --hero: var(--ivory);
+  --bar-ink: var(--ivory);
   --serif: 'Cormorant Garamond', 'Iowan Old Style', Palatino, Georgia, serif;
   --sans: 'Manrope', 'Segoe UI', system-ui, sans-serif;
   --slate-w: 4.75rem;
@@ -172,7 +175,7 @@ main {
 
 .hero {
   --hero-pad: clamp(1.85rem, 5.6vw, 5.25rem);
-  --hero-field: #f4f3f0;
+  --hero-field: var(--ivory);
   position: relative;
   display: grid;
   grid-template-columns: 1fr;
@@ -187,56 +190,24 @@ main {
   color: var(--ink);
 }
 
-.hero-geometry {
+.hero-hexes {
   position: absolute;
   inset: 0;
   z-index: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   pointer-events: none;
 }
 
-.hero-geometry-field {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 50%;
-  overflow: hidden;
-  transform-origin: 100% 0%;
-}
-
-.hero-geometry-stage {
-  position: absolute;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-}
-
-.hero-hex {
-  position: absolute;
+.hero-hexes__canvas {
   display: block;
-  object-fit: fill;
-  opacity: 0;
-  translate: 5.25rem 0;
-  will-change: opacity, translate;
-  transition:
-    opacity var(--hex-fade, 1.1s) cubic-bezier(0.22, 1, 0.36, 1) var(--hex-delay, 0s),
-    translate var(--hex-move, 1.25s) cubic-bezier(0.22, 1, 0.36, 1) var(--hex-delay, 0s);
-}
-
-.hero-geometry-field.is-in .hero-hex {
-  opacity: 1;
-  translate: 0 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-hex {
-    opacity: 1;
-    translate: 0;
-    transition: none;
-  }
+  width: 100%;
+  height: 100%;
 }
 
 .hero-lockup {
+  --hero-lead-size: clamp(4.15rem, 8.6vw, 9.5rem);
   position: relative;
   z-index: 1;
   width: max-content;
@@ -293,21 +264,21 @@ main {
   min-width: 17.5rem;
   padding: 1.05rem 1.2rem 1.15rem;
   background: var(--night);
-  border: 1px solid color-mix(in srgb, #edeae4 22%, #100f0d);
-  color: #edeae4;
+  border: 1px solid color-mix(in srgb, var(--ivory) 22%, var(--ink));
+  color: var(--ivory);
 }
 
 .index-nav-group + .index-nav-group {
   margin-top: 0.85rem;
   padding-top: 0.85rem;
-  border-top: 1px solid color-mix(in srgb, #edeae4 14%, #100f0d);
+  border-top: 1px solid color-mix(in srgb, var(--ivory) 14%, var(--ink));
 }
 
 .index-nav-practice,
 .index-nav-effort {
   display: flex;
   gap: 0.75rem;
-  color: #edeae4;
+  color: var(--ivory);
   font-family: var(--sans);
   font-size: 0.62rem;
   font-weight: 500;
@@ -318,13 +289,13 @@ main {
 
 .index-nav-practice span {
   flex: 0 0 1.4rem;
-  color: color-mix(in srgb, #edeae4 70%, #100f0d);
+  color: color-mix(in srgb, var(--ivory) 70%, var(--ink));
 }
 
 .index-nav-effort {
   margin-top: 0.4rem;
   padding-left: 2.15rem;
-  color: color-mix(in srgb, #edeae4 70%, #100f0d);
+  color: color-mix(in srgb, var(--ivory) 70%, var(--ink));
 }
 
 .index-nav-practice:hover,
@@ -354,7 +325,7 @@ main {
 
 .hero-lead {
   padding-top: 0.02em;
-  font-size: clamp(4.15rem, 8.6vw, 9.5rem);
+  font-size: var(--hero-lead-size);
   font-weight: 500;
   letter-spacing: -0.04em;
   line-height: 0.88;
@@ -371,16 +342,7 @@ main {
 .hero-mid-row {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
   margin-left: clamp(3.25rem, 16vw, 13.5rem);
-}
-
-.hero-rule {
-  flex: 0 0 auto;
-  display: block;
-  width: clamp(2.4rem, 4.5vw, 4.1rem);
-  height: 1px;
-  background: var(--copper);
 }
 
 .hero-mid,
@@ -402,6 +364,7 @@ main {
   display: flex;
   flex-direction: column;
   margin-top: 1.75rem;
+  margin-left: calc(var(--hero-lead-size) * 0.12);
   color: color-mix(in srgb, var(--ink) 52%, var(--hero-field));
   font-family: var(--sans);
   font-size: 0.625rem;
@@ -970,9 +933,9 @@ a.close-link:focus-visible {
   z-index: 2;
   justify-content: flex-start;
   padding: 1.05rem 1.2rem;
-  color: color-mix(in srgb, #edeae4 82%, transparent);
+  color: color-mix(in srgb, var(--ivory) 82%, transparent);
   text-align: left;
-  text-shadow: 0 1px 12px rgb(16 15 13 / 0.7);
+  text-shadow: 0 1px 12px color-mix(in srgb, var(--ink) 70%, transparent);
   pointer-events: none;
 }
 
@@ -1105,53 +1068,26 @@ a.effort-title:hover {
   .hero {
     --hero-pad: var(--pad);
     grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(34vh, 1fr);
+    grid-template-rows: auto;
     align-items: stretch;
     margin-top: 0;
     padding-top: 0;
     min-height: calc(100svh - var(--bar));
   }
 
-  .hero-geometry {
-    position: relative;
-    inset: auto;
-    min-height: 34vh;
-    clip-path: none;
-  }
-
-  .hero-geometry-field {
-    position: relative;
-    left: auto;
-    width: 100%;
-    height: 100%;
-    transform: none;
-  }
-
-  .hero-hex {
-    translate: 0 2.75rem;
-  }
-
-  .hero-geometry-field.is-in .hero-hex {
-    translate: 0 0;
-  }
-
   .hero-lockup {
+    --hero-lead-size: clamp(3.05rem, 12.4vw, 4.1rem);
     width: 100%;
     max-width: none;
     padding: 1.5rem var(--hero-pad) 1.25rem;
   }
 
   .hero-lead {
-    font-size: clamp(3.05rem, 12.4vw, 4.1rem);
+    font-size: var(--hero-lead-size);
   }
 
   .hero-mid-row {
     margin-left: 0.15rem;
-    gap: 0.85rem;
-  }
-
-  .hero-rule {
-    width: 2.15rem;
   }
 
   .hero-mid,
@@ -1314,34 +1250,35 @@ a.effort-title:hover {
 /* --- Study --------------------------------------------------------------- */
 
 html.study-dark {
-  --paper: #100f0d;
-  --ink: #edeae4;
-  --ink-mute: color-mix(in srgb, #edeae4 70%, #100f0d);
-  --ink-faint: color-mix(in srgb, #edeae4 50%, #100f0d);
-  --ink-rule: color-mix(in srgb, #edeae4 14%, #100f0d);
-  --hold: color-mix(in srgb, #edeae4 40%, transparent);
-  --hero: #100f0d;
+  --paper: #22211f;
+  --ink: #f1eee8;
+  --ink-mute: color-mix(in srgb, #f1eee8 70%, #22211f);
+  --ink-faint: color-mix(in srgb, #f1eee8 50%, #22211f);
+  --ink-rule: color-mix(in srgb, #f1eee8 14%, #22211f);
+  --hold: color-mix(in srgb, #f1eee8 40%, transparent);
+  --hero: #22211f;
+  --bar-ink: #f1eee8;
   color-scheme: dark;
 }
 
 html.study-dark,
 html.study-dark body {
-  background: #100f0d;
-  color: #edeae4;
+  background: #22211f;
+  color: #f1eee8;
 }
 
 .study {
-  --paper: #100f0d;
-  --ink: #edeae4;
-  --ink-mute: color-mix(in srgb, #edeae4 70%, #100f0d);
-  --ink-faint: color-mix(in srgb, #edeae4 50%, #100f0d);
-  --ink-rule: color-mix(in srgb, #edeae4 14%, #100f0d);
-  --hold: color-mix(in srgb, #edeae4 40%, transparent);
-  --hero: #100f0d;
+  --paper: #22211f;
+  --ink: #f1eee8;
+  --ink-mute: color-mix(in srgb, #f1eee8 70%, #22211f);
+  --ink-faint: color-mix(in srgb, #f1eee8 50%, #22211f);
+  --ink-rule: color-mix(in srgb, #f1eee8 14%, #22211f);
+  --hold: color-mix(in srgb, #f1eee8 40%, transparent);
+  --hero: #22211f;
   min-height: 100svh;
   padding-bottom: 0;
-  background: #100f0d;
-  color: #edeae4;
+  background: #22211f;
+  color: #f1eee8;
 }
 
 .study .page-bar {
@@ -1358,8 +1295,8 @@ html.study-dark body {
 }
 
 .study ::selection {
-  background: #edeae4;
-  color: #100f0d;
+  background: #f1eee8;
+  color: #22211f;
 }
 
 .study-spread {
@@ -1585,8 +1522,8 @@ html.study-dark body {
 }
 
 .gp-cuts .still-ticks {
-  color: color-mix(in srgb, #edeae4 88%, transparent);
-  text-shadow: 0 1px 12px rgb(16 15 13 / 0.7);
+  color: color-mix(in srgb, var(--ivory) 88%, transparent);
+  text-shadow: 0 1px 12px color-mix(in srgb, var(--ink) 70%, transparent);
 }
 
 .slg-spread {
@@ -2409,11 +2346,11 @@ html.study-dark body {
 .study-bleed {
   position: relative;
   z-index: 4;
-  background: #100f0d;
+  background: var(--night);
 }
 
 .study-bleed .still-frame {
-  background: #100f0d;
+  background: var(--night);
 }
 
 .study-chapter-frame-strip {
@@ -2677,7 +2614,7 @@ html.study-dark body {
 }
 
 .dlt-plate .still-frame {
-  background: #100f0d;
+  background: var(--night);
 }
 
 .dlt-plate-white .still-frame {
@@ -2704,7 +2641,7 @@ html.study-dark body {
 }
 
 .dlt-plate .still-ticks {
-  color: #1a1917;
+  color: #22211f;
   text-shadow: none;
 }
 
