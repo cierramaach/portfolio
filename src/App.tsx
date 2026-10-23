@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, type ReactNode } from 'react'
 import { EditorBar } from './components/EditorBar'
 import { SmoothScroll } from './components/SmoothScroll'
 import { isWorkPath, WorkParallax } from './components/WorkParallax'
@@ -17,7 +17,7 @@ import { NotFoundPage } from './pages/NotFoundPage'
 import { PracticePage } from './pages/PracticePage'
 
 function Redirect({ to }: { to: string }) {
-  useEffect(() => {
+  useLayoutEffect(() => {
     const url = new URL(to, window.location.origin)
     window.history.replaceState({}, '', `${url.pathname}${url.hash}`)
     window.dispatchEvent(new PopStateEvent('popstate'))

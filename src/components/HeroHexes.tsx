@@ -1,7 +1,8 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import {
   HERO_HEX_FRAME,
   HEX_LOOK,
+  HEX_UNIT,
   HEX_EXCLUSION_MARGIN,
   hexFace,
   layoutHexes,
@@ -104,17 +105,35 @@ function measureZone(
   }
 }
 
+function entranceStyle(hex: HeroHex): CSSProperties {
+  const west = Math.max(0, Math.min(1, 1 - hex.cx / HERO_HEX_FRAME.w))
+  const size = Math.max(0, Math.min(1, (hex.radius / HEX_UNIT - 0.4) / 1.5))
+  let n = 2166136261
+  for (let i = 0; i < hex.id.length; i++) {
+    n ^= hex.id.charCodeAt(i)
+    n = Math.imul(n, 16777619)
+  }
+  const jitter = (n >>> 0) % 7
+  return {
+    ['--hex-opacity' as string]: String(hex.opacity),
+    ['--hex-delay' as string]: `${(0.04 + west * 0.38 + jitter * 0.012).toFixed(3)}s`,
+    ['--hex-move' as string]: `${(0.92 + size * 0.42).toFixed(3)}s`,
+    ['--hex-fade' as string]: `${(0.78 + size * 0.36).toFixed(3)}s`,
+  }
+}
+
 function HexCell({ hex }: { hex: HeroHex }) {
   const look = HEX_LOOK[hex.tint][hex.depth]
   const line = hex.finish === 'line'
   return (
     <polygon
+      className="hero-hexes__cell"
       points={points(hexFace(hex.cx, hex.cy, hex.radius))}
       fill={line ? 'none' : look.face}
       stroke={look.stroke}
       strokeWidth={line ? look.strokeWidth * 1.35 : look.strokeWidth}
       strokeLinejoin="round"
-      opacity={hex.opacity}
+      style={entranceStyle(hex)}
     />
   )
 }
@@ -126,6 +145,7 @@ type HeroHexesProps = {
 export function HeroHexes({ lockup }: HeroHexesProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const [cells, setCells] = useState<HeroHex[]>([])
+  const [arrived, setArrived] = useState(false)
 
   useLayoutEffect(() => {
     const svg = svgRef.current
@@ -173,10 +193,29 @@ export function HeroHexes({ lockup }: HeroHexesProps) {
     }
   }, [lockup])
 
+  useLayoutEffect(() => {
+    if (!cells.length || arrived) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (reduce.matches) {
+      setArrived(true)
+      return
+    }
+    let cancelled = false
+    const outer = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (!cancelled) setArrived(true)
+      })
+    })
+    return () => {
+      cancelled = true
+      cancelAnimationFrame(outer)
+    }
+  }, [cells, arrived])
+
   const ordered = useMemo(() => [...cells].sort(paintOrder), [cells])
 
   return (
-    <div className="hero-hexes" aria-hidden="true">
+    <div className={arrived ? 'hero-hexes is-in' : 'hero-hexes'} aria-hidden="true">
       <svg
         ref={svgRef}
         className="hero-hexes__canvas"

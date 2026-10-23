@@ -207,6 +207,43 @@ main {
   height: 100%;
 }
 
+.hero-hexes__cell {
+  opacity: 0;
+  transform: translate(5.25rem, 0);
+}
+
+.hero-hexes:not(.is-in) .hero-hexes__cell {
+  will-change: opacity, transform;
+}
+
+.hero-hexes.is-in .hero-hexes__cell {
+  opacity: var(--hex-opacity, 1);
+  transform: translate(0, 0);
+  transition:
+    opacity var(--hex-fade, 1.1s) cubic-bezier(0.22, 1, 0.36, 1) var(--hex-delay, 0s),
+    transform var(--hex-move, 1.25s) cubic-bezier(0.22, 1, 0.36, 1) var(--hex-delay, 0s);
+}
+
+@media (max-width: 860px) {
+  .hero-hexes__cell {
+    transform: translate(0, 2.75rem);
+  }
+
+  .hero-hexes.is-in .hero-hexes__cell {
+    transform: translate(0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-hexes__cell,
+  .hero-hexes.is-in .hero-hexes__cell {
+    opacity: var(--hex-opacity, 1);
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+}
+
 .hero-lockup {
   --hero-lead-size: clamp(4.15rem, 8.6vw, 9.5rem);
   position: relative;
@@ -365,7 +402,7 @@ main {
   display: flex;
   flex-direction: column;
   margin-top: 1.75rem;
-  margin-left: calc(var(--hero-lead-size) * 0.12);
+  margin-left: calc(var(--hero-lead-size) * 0.12 + 10px);
   color: color-mix(in srgb, var(--ink) 52%, var(--hero-field));
   font-family: var(--sans);
   font-size: 0.625rem;
@@ -1078,35 +1115,69 @@ a.effort-title:hover {
   }
 
   .hero-lockup {
-    --hero-lead-size: clamp(3.05rem, 12.4vw, 4.1rem);
+    --hero-lead-size: clamp(4.55rem, 20.5vw, 6.25rem);
     width: 100%;
-    max-width: none;
-    padding: 1.5rem var(--hero-pad) 1.25rem;
-    align-self: center;
+    max-width: 100%;
+    padding: clamp(5rem, 11vh, 6.5rem) var(--hero-pad) 1.5rem;
+    align-self: start;
+  }
+
+  .hero-title {
+    width: 100%;
+  }
+
+  .hero-line {
+    width: auto;
+    max-width: 100%;
   }
 
   .hero-lead {
+    width: 100%;
+    white-space: normal;
     font-size: var(--hero-lead-size);
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 0.86;
+  }
+
+  .hero-roles {
+    width: 100%;
+    margin-top: 0.28em;
   }
 
   .hero-mid-row {
-    margin-left: 0.15rem;
+    margin-left: 0;
   }
 
   .hero-mid,
   .hero-end {
-    font-size: clamp(1.7rem, 7.2vw, 2.45rem);
+    width: max-content;
+    max-width: 100%;
+    font-size: clamp(2.2rem, 9.2vw, 3.05rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
   }
 
   .hero-end {
-    margin-left: clamp(2.4rem, 18vw, 6.5rem);
+    margin-left: clamp(0.7rem, 5.5vw, 2rem);
   }
 
   .hero-blurb {
-    margin-top: 1.35rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-top: 1.55rem;
+    margin-left: 5px;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    line-height: 1.55;
   }
 
   .hero-blurb span {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
     white-space: normal;
   }
 

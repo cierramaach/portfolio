@@ -1,7 +1,7 @@
 import {
   createContext,
   useContext,
-  useEffect,
+  useLayoutEffect,
   useState,
   type MouseEvent,
   type ReactNode,
@@ -24,9 +24,13 @@ function readNav(): Nav {
 export function NavProvider({ children }: { children: ReactNode }) {
   const [nav, setNav] = useState<Nav>(readNav)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const sync = () => setNav(readNav())
     window.addEventListener('popstate', sync)
+    // Child Redirects may replace the URL before this listener exists.
+    // Read location again so /creative-direction, /experience, and
+    // /experiments do not stay on a blank page after the address updates.
+    sync()
     return () => window.removeEventListener('popstate', sync)
   }, [])
 
