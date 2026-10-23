@@ -5,18 +5,21 @@ export const HEX_ASPECT = Math.sqrt(3) / 2
 
 /**
  * Standard circumradius. Cell `scale` is a multiple of this.
- * Extra-small 0.32–0.38 · small 0.42–0.52 · medium 0.78–1.18 · large 1.58 · oversized 1.82–1.92
+ * Small 0.62–0.76 · medium 0.80–1.18 · large 1.58 · oversized 1.68–1.85
  */
 export const HEX_UNIT = 80
 
-/** Hard minimum outline-to-outline gap, in CSS pixels. */
+/** Hard minimum outline-to-outline gap for hexes that are not touching, in CSS pixels. */
 export const HEX_MIN_GAP = 30
 
 /** Target outline-to-outline gap at the 1600 × 900 reference frame, in CSS pixels. */
 export const HEX_TARGET_GAP = 36
 
-/** Interior clearance for an authored nested child, in CSS pixels. */
-export const HEX_NEST_CLEARANCE = 18
+/** Minimum overlap depth for an intentional intersection, in CSS pixels. */
+export const HEX_CROSS_MIN = 16
+
+/** Minimum protrusion through the other outline so a cut is not a nest. */
+export const HEX_PROTRUDE_MIN = 22
 
 /** Nearby hexes may not share a top edge, bottom edge, or mid-vertex band. */
 export const HEX_ALIGN_TOL = 18
@@ -48,7 +51,7 @@ export type HeroHex = {
   tint: HexTint
   finish: HexFinish
   opacity: number
-  parentId: string | null
+  intersectIds: string[]
 }
 
 export type ExclusionZone = {
@@ -90,17 +93,6 @@ export const HEX_LOOK = {
 
 export const HEX_DEPTH = HEX_LOOK.ivory
 
-type HexNestSpec = {
-  id: string
-  ox: number
-  oy: number
-  scale: number
-  depth: HexDepth
-  tint: HexTint
-  finish?: HexFinish
-  at?: readonly HexBreakpoint[]
-}
-
 type HexCellSpec = {
   id: string
   nx: number
@@ -111,21 +103,22 @@ type HexCellSpec = {
   tint: HexTint
   finish?: HexFinish
   at?: readonly HexBreakpoint[]
-  nest?: readonly HexNestSpec[]
+  /** Other cell ids this hex should rim-cut. Never nested. */
+  touch?: readonly string[]
 }
 
 /**
  * Art-directed east field.
  *
- * Ivory `field` fill matches the paper, so anchors use recessed / raised
- * ivory, silver, or slate — never a camouflaged fill. Mass sits in the
- * visible frame and crops 15–35% off the top, right, and bottom. A pause
- * at mid-height keeps the type clear. Nested children are authored groups.
- * Independent cells keep a paper gap. Fade is right-to-left with a 0.14 floor.
+ * Large ivory anchors crop off the top, right, and bottom. Medium slate
+ * and silver cells cut their rims. Mid-field forms step toward the type
+ * as real hexes, not specks. Most hexes share an authored intersection.
+ * None sit inside another. Independent neighbors keep a paper gap.
+ * Fade floors at 50% opacity.
  */
 export const HEX_FIELD = {
   fade: {
-    floor: 0.14,
+    floor: 0.5,
     range: 240,
     west: 0.56,
     westSpan: 0.32,
@@ -133,171 +126,250 @@ export const HEX_FIELD = {
   cells: [
     {
       id: 'north',
-      nx: 0.92,
-      ny: 0.1,
-      scale: 1.78,
+      nx: 0.93,
+      ny: 0.07,
+      scale: 1.82,
       depth: 'recessed',
       tint: 'ivory',
-      nest: [
-        {
-          id: 'north-in',
-          ox: -0.32,
-          oy: 0.18,
-          scale: 0.48,
-          depth: 'recessed',
-          tint: 'slate',
-          at: ['desktop', 'tablet'],
-        },
-      ],
-    },
-    {
-      id: 'north-arm',
-      nx: 0.76,
-      ny: 0.19,
-      lift: -4,
-      scale: 1.08,
-      depth: 'raised',
-      tint: 'ivory',
-      at: ['desktop', 'tablet'],
     },
     {
       id: 'north-ghost',
-      nx: 0.69,
-      ny: 0.05,
-      lift: 4,
-      scale: 0.4,
+      nx: 0.88,
+      ny: -0.02,
+      scale: 0.68,
       depth: 'field',
       tint: 'silver',
       finish: 'line',
       at: ['desktop'],
+      touch: ['north'],
+    },
+    {
+      id: 'north-cut',
+      nx: 1.02,
+      ny: 0.12,
+      scale: 0.46,
+      depth: 'raised',
+      tint: 'ivory',
+      at: ['desktop', 'tablet'],
+      touch: ['north'],
+    },
+    {
+      id: 'north-arm',
+      nx: 0.84,
+      ny: 0.2,
+      lift: -4,
+      scale: 1.16,
+      depth: 'raised',
+      tint: 'ivory',
+      at: ['desktop', 'tablet'],
+      touch: ['north'],
     },
     {
       id: 'high-slate',
-      nx: 0.98,
-      ny: 0.34,
+      nx: 0.99,
+      ny: 0.26,
       lift: 4,
-      scale: 0.92,
+      scale: 0.96,
       depth: 'field',
       tint: 'slate',
+      touch: ['north', 'north-cut'],
     },
     {
       id: 'high-taper',
-      nx: 0.66,
-      ny: 0.25,
+      nx: 0.755,
+      ny: 0.255,
       lift: 6,
-      scale: 0.36,
+      scale: 0.8,
       depth: 'recessed',
       tint: 'ivory',
       finish: 'line',
       at: ['desktop'],
+      touch: ['north-arm'],
+    },
+    {
+      id: 'high-step',
+      nx: 0.86,
+      ny: 0.36,
+      scale: 0.88,
+      depth: 'recessed',
+      tint: 'ivory',
+      at: ['desktop', 'tablet'],
+      touch: ['north-arm'],
     },
     {
       id: 'fore',
-      nx: 0.825,
-      ny: 0.33,
+      nx: 0.94,
+      ny: 0.31,
       lift: 4,
-      scale: 0.44,
+      scale: 0.76,
       depth: 'recessed',
       tint: 'ivory',
       at: ['desktop', 'tablet'],
+      touch: ['high-slate'],
     },
     {
       id: 'mid-step',
-      nx: 0.71,
-      ny: 0.39,
+      nx: 0.75,
+      ny: 0.43,
       lift: 4,
-      scale: 0.5,
+      scale: 0.9,
       depth: 'recessed',
       tint: 'ivory',
       at: ['desktop', 'tablet'],
+      touch: ['west-taper'],
     },
     {
       id: 'mid-ghost',
-      nx: 0.94,
-      ny: 0.46,
+      nx: 0.985,
+      ny: 0.47,
       lift: -4,
-      scale: 0.38,
+      scale: 0.72,
       depth: 'field',
       tint: 'silver',
       finish: 'line',
+      touch: ['east-cut'],
     },
     {
       id: 'west-taper',
-      nx: 0.68,
-      ny: 0.54,
+      nx: 0.72,
+      ny: 0.58,
       lift: 4,
-      scale: 0.36,
+      scale: 0.76,
       depth: 'recessed',
       tint: 'silver',
       at: ['desktop'],
+      touch: ['mid-step'],
     },
     {
       id: 'east-cut',
-      nx: 1.006,
-      ny: 0.556,
-      scale: 0.82,
+      nx: 0.96,
+      ny: 0.5,
+      scale: 0.84,
       depth: 'raised',
       tint: 'silver',
+      touch: ['south-cut'],
+    },
+    {
+      id: 'south-cut',
+      nx: 0.87,
+      ny: 0.555,
+      scale: 0.82,
+      depth: 'recessed',
+      tint: 'ivory',
+      at: ['desktop'],
+      touch: ['south'],
     },
     {
       id: 'south',
-      nx: 0.838,
-      ny: 0.71,
+      nx: 0.84,
+      ny: 0.7,
       lift: 1,
-      scale: 1.62,
+      scale: 1.58,
       depth: 'raised',
       tint: 'ivory',
       at: ['desktop', 'tablet'],
-      nest: [
-        {
-          id: 'south-in',
-          ox: 0.22,
-          oy: -0.28,
-          scale: 0.46,
-          depth: 'recessed',
-          tint: 'ivory',
-          at: ['desktop'],
-        },
-      ],
+    },
+    {
+      id: 'south-arm',
+      nx: 0.755,
+      ny: 0.78,
+      scale: 0.98,
+      depth: 'field',
+      tint: 'ivory',
+      at: ['desktop', 'tablet'],
+      touch: ['south'],
     },
     {
       id: 'low-slate',
-      nx: 0.95,
-      ny: 0.878,
+      nx: 0.92,
+      ny: 0.826,
       scale: 1.12,
       depth: 'field',
       tint: 'slate',
+      touch: ['south', 'bottom'],
     },
     {
       id: 'low-taper',
-      nx: 0.662,
-      ny: 0.844,
-      scale: 0.44,
+      nx: 0.705,
+      ny: 0.83,
+      scale: 0.86,
       depth: 'recessed',
       tint: 'silver',
       at: ['desktop', 'tablet'],
+      touch: ['south-arm'],
     },
     {
       id: 'bottom',
-      nx: 0.766,
-      ny: 1.006,
+      nx: 0.86,
+      ny: 0.98,
       scale: 1.68,
       depth: 'recessed',
       tint: 'ivory',
     },
     {
+      id: 'bottom-cut',
+      nx: 0.94,
+      ny: 1.08,
+      scale: 0.5,
+      depth: 'raised',
+      tint: 'silver',
+      at: ['desktop', 'tablet'],
+      touch: ['bottom'],
+    },
+    {
       id: 'rim-ghost',
-      nx: 1.025,
-      ny: 0.978,
+      nx: 1.01,
+      ny: 0.88,
       lift: -2,
-      scale: 0.4,
+      scale: 0.42,
       depth: 'raised',
       tint: 'silver',
       finish: 'line',
       at: ['desktop', 'tablet'],
+      touch: ['low-slate'],
+    },
+    {
+      id: 'mid-fill',
+      nx: 0.82,
+      ny: 0.422,
+      lift: 2,
+      scale: 0.86,
+      depth: 'recessed',
+      tint: 'ivory',
+      at: ['desktop'],
+      touch: ['high-step', 'mid-step'],
+    },
+    {
+      id: 'mid-fill-2',
+      nx: 0.854,
+      ny: 0.529,
+      scale: 0.8,
+      depth: 'field',
+      tint: 'silver',
+      at: ['desktop'],
+      touch: ['south', 'south-cut', 'mid-fill'],
     },
   ] satisfies readonly HexCellSpec[],
 } as const
+
+const TOUCH = (() => {
+  const map = new Map<string, Set<string>>()
+  const add = (a: string, b: string) => {
+    if (a === b) return
+    if (!map.has(a)) map.set(a, new Set())
+    if (!map.has(b)) map.set(b, new Set())
+    map.get(a)!.add(b)
+    map.get(b)!.add(a)
+  }
+  for (const spec of HEX_FIELD.cells) {
+    for (const id of spec.touch ?? []) add(spec.id, id)
+  }
+  return map
+})()
+
+function shouldTouch(a: string, b: string) {
+  return TOUCH.get(a)?.has(b) ?? false
+}
 
 export function breakpointForWidth(width: number): HexBreakpoint {
   if (width <= 860) return 'mobile'
@@ -446,7 +518,7 @@ export function outlineGap(a: HeroHex, b: HeroHex) {
 
 /**
  * How far `inner` sits inside `outer`.
- * Positive = fully contained with that much inner-outline clearance.
+ * Positive = fully contained. Negative = protrudes through the outline.
  */
 export function containmentClearance(outer: HeroHex, inner: HeroHex) {
   const outerInner = outlinePolygon(outer, 'inner')
@@ -462,19 +534,33 @@ export function containmentClearance(outer: HeroHex, inner: HeroHex) {
   return min
 }
 
-function nestedPair(a: HeroHex, b: HeroHex) {
-  return a.parentId === b.id || b.parentId === a.id
+function linked(a: HeroHex, b: HeroHex) {
+  return a.intersectIds.includes(b.id) || b.intersectIds.includes(a.id)
 }
 
-export function classifyPair(a: HeroHex, b: HeroHex, minGap: number): HexPairKind {
+function link(a: HeroHex, b: HeroHex) {
+  if (!a.intersectIds.includes(b.id)) a.intersectIds.push(b.id)
+  if (!b.intersectIds.includes(a.id)) b.intersectIds.push(a.id)
+}
+
+export function classifyPair(
+  a: HeroHex,
+  b: HeroHex,
+  minGap: number,
+  minCross: number,
+  minProtrude: number,
+): HexPairKind {
   const insideA = containmentClearance(a, b)
   const insideB = containmentClearance(b, a)
   if (insideA >= 0 || insideB >= 0) return 'contain'
 
   const gap = outlineGap(a, b)
   if (gap >= minGap) return 'gap'
-  if (gap > -1) return 'tangent'
+  if (gap > -minCross) return 'tangent'
   if (!outlinesCross(a, b)) return 'tangent'
+
+  const poke = Math.min(-insideA, -insideB)
+  if (poke < minProtrude) return 'tangent'
   return 'intersect'
 }
 
@@ -509,7 +595,6 @@ function makeHex(
   depth: HexDepth,
   tint: HexTint,
   finish: HexFinish = 'fill',
-  parentId: string | null = null,
 ): HeroHex {
   const radius = HEX_UNIT * scale
   const w = radius * 2
@@ -525,27 +610,20 @@ function makeHex(
     tint,
     finish,
     opacity: 1,
-    parentId,
+    intersectIds: [],
   }
 }
 
 function relocate(hex: HeroHex, cx: number, cy: number): HeroHex {
-  return { ...hex, cx, cy }
-}
-
-function moveHex(hexes: HeroHex[], id: string, dx: number, dy: number) {
-  return hexes.map((hex) => {
-    if (hex.id !== id && hex.parentId !== id) return hex
-    return relocate(hex, hex.cx + dx, hex.cy + dy)
-  })
+  return { ...hex, cx, cy, intersectIds: [...hex.intersectIds] }
 }
 
 export type HexViolation =
   | { type: 'gap'; a: string; b: string; gap: number; min: number }
   | { type: 'overlap'; a: string; b: string }
   | { type: 'containment'; a: string; b: string }
-  | { type: 'nest'; a: string; b: string; room: number; min: number }
   | { type: 'tangent'; a: string; b: string; gap: number }
+  | { type: 'intersect'; a: string; b: string; kind: HexPairKind }
   | { type: 'opacity'; id: string; opacity: number; min: number }
 
 export type HexValidation = {
@@ -558,6 +636,8 @@ export type HexLayoutStats = {
   placed: number
   rejected: number
   clipped: number
+  intersections: number
+  touching: number
   nested: number
   alignments: number
   ids: string[]
@@ -581,6 +661,8 @@ function emptyStats(): HexLayoutStats {
     placed: 0,
     rejected: 0,
     clipped: 0,
+    intersections: 0,
+    touching: 0,
     nested: 0,
     alignments: 0,
     ids: [],
@@ -673,41 +755,31 @@ function idHash(id: string) {
 
 function inZone(hex: HeroHex, zone: ExclusionZone | null) {
   if (!zone || !isLoud(hex) || !hexHitsZone(hex, zone)) return false
-  // Right-edge cells may clip the lockup and still belong in the crop.
   return hex.cx < HERO_HEX_FRAME.w * 0.78
-}
-
-function independentsOf(hexes: HeroHex[]) {
-  return hexes.filter((hex) => !hex.parentId)
-}
-
-function childrenOf(hexes: HeroHex[], parentId: string) {
-  return hexes.filter((hex) => hex.parentId === parentId)
 }
 
 function pairOk(
   hex: HeroHex,
   other: HeroHex,
   minGap: number,
-  nestMin: number,
+  minCross: number,
+  minProtrude: number,
 ) {
-  if (nestedPair(hex, other)) {
-    const parent = hex.parentId ? other : hex
-    const child = hex.parentId ? hex : other
-    return containmentClearance(parent, child) >= nestMin
-  }
-  return classifyPair(hex, other, minGap) === 'gap' && outlineGap(hex, other) >= minGap
+  const kind = classifyPair(hex, other, minGap, minCross, minProtrude)
+  if (shouldTouch(hex.id, other.id) || linked(hex, other)) return kind === 'intersect'
+  return kind === 'gap' && outlineGap(hex, other) >= minGap
 }
 
 function relationsHold(
   hex: HeroHex,
   others: HeroHex[],
   minGap: number,
-  nestMin: number,
+  minCross: number,
+  minProtrude: number,
 ) {
   for (const other of others) {
     if (other.id === hex.id) continue
-    if (!pairOk(hex, other, minGap, nestMin)) return false
+    if (!pairOk(hex, other, minGap, minCross, minProtrude)) return false
   }
   return true
 }
@@ -716,9 +788,10 @@ export function canPlace(
   hex: HeroHex,
   placed: HeroHex[],
   minGap: number,
-  nestMin: number,
+  minCross: number,
+  minProtrude: number,
 ) {
-  return relationsHold(hex, placed, minGap, nestMin)
+  return relationsHold(hex, placed, minGap, minCross, minProtrude)
 }
 
 function alongLine(from: HeroHex, away: HeroHex, distance: number) {
@@ -726,6 +799,68 @@ function alongLine(from: HeroHex, away: HeroHex, distance: number) {
   const dy = from.cy - away.cy
   const len = Math.hypot(dx, dy) || 1
   return relocate(from, away.cx + (dx / len) * distance, away.cy + (dy / len) * distance)
+}
+
+function escapeContainment(
+  inner: HeroHex,
+  outer: HeroHex,
+  minGap: number,
+  minCross: number,
+  minProtrude: number,
+) {
+  const base = Math.hypot(inner.cx - outer.cx, inner.cy - outer.cy) || 1
+  for (let i = 1; i <= 28; i++) {
+    const next = alongLine(inner, outer, base + 10 * i)
+    const kind = classifyPair(outer, next, minGap, minCross, minProtrude)
+    if (kind === 'intersect') return next
+    if (kind === 'gap') return next
+  }
+  return null
+}
+
+function deepenCross(
+  mobile: HeroHex,
+  fixed: HeroHex,
+  minGap: number,
+  minCross: number,
+  minProtrude: number,
+) {
+  const base = Math.hypot(mobile.cx - fixed.cx, mobile.cy - fixed.cy) || 1
+  let last: HeroHex | null = null
+  for (let i = 1; i <= 14; i++) {
+    const next = alongLine(mobile, fixed, Math.max(8, base - 7 * i))
+    const kind = classifyPair(next, fixed, minGap, minCross, minProtrude)
+    if (kind === 'contain') return last
+    if (kind === 'intersect') return next
+    last = next
+  }
+  return last && classifyPair(last, fixed, minGap, minCross, minProtrude) === 'intersect'
+    ? last
+    : null
+}
+
+function pullToCross(
+  mobile: HeroHex,
+  fixed: HeroHex,
+  minGap: number,
+  minCross: number,
+  minProtrude: number,
+) {
+  const gap = outlineGap(mobile, fixed)
+  // Never yank a distant hex across the field.
+  if (gap > 80) return null
+  const base = Math.hypot(mobile.cx - fixed.cx, mobile.cy - fixed.cy) || 1
+  let last: HeroHex | null = null
+  for (let i = 1; i <= 18; i++) {
+    const next = alongLine(mobile, fixed, Math.max(8, base - 8 * i))
+    const kind = classifyPair(next, fixed, minGap, minCross, minProtrude)
+    if (kind === 'contain') return last
+    if (kind === 'intersect') return next
+    last = next
+  }
+  return last && classifyPair(last, fixed, minGap, minCross, minProtrude) === 'intersect'
+    ? last
+    : null
 }
 
 function pushToGap(mobile: HeroHex, fixed: HeroHex, minGap: number, zone: ExclusionZone | null) {
@@ -741,11 +876,12 @@ function pushToGap(mobile: HeroHex, fixed: HeroHex, minGap: number, zone: Exclus
   return null
 }
 
-function settleIndependent(
+function resolveAgainstPlaced(
   hex: HeroHex,
   placed: HeroHex[],
   minGap: number,
-  nestMin: number,
+  minCross: number,
+  minProtrude: number,
   zone: ExclusionZone | null,
 ): HeroHex | null {
   let current = hex
@@ -753,10 +889,30 @@ function settleIndependent(
   for (let pass = 0; pass < 6; pass++) {
     let changed = false
     for (const other of placed) {
-      if (nestedPair(current, other)) continue
-      const kind = classifyPair(current, other, minGap)
-      if (kind === 'gap' && outlineGap(current, other) >= minGap) continue
+      const touch = shouldTouch(current.id, other.id)
+      let kind = classifyPair(current, other, minGap, minCross, minProtrude)
 
+      if (kind === 'contain') {
+        const escaped = escapeContainment(current, other, minGap, minCross, minProtrude)
+        if (!escaped) return null
+        current = escaped
+        kind = classifyPair(current, other, minGap, minCross, minProtrude)
+        changed = true
+      }
+
+      if (touch) {
+        if (kind === 'intersect') continue
+        const crossed =
+          kind === 'tangent' || outlineGap(current, other) < 0
+            ? deepenCross(current, other, minGap, minCross, minProtrude)
+            : pullToCross(current, other, minGap, minCross, minProtrude)
+        if (!crossed || inZone(crossed, zone)) return null
+        current = crossed
+        changed = true
+        continue
+      }
+
+      if (kind === 'gap' && outlineGap(current, other) >= minGap) continue
       const gapped = pushToGap(current, other, minGap, zone)
       if (!gapped) return null
       current = gapped
@@ -766,7 +922,19 @@ function settleIndependent(
   }
 
   if (inZone(current, zone)) return null
-  if (!canPlace(current, placed, minGap, nestMin)) return null
+
+  for (const other of placed) {
+    const kind = classifyPair(current, other, minGap, minCross, minProtrude)
+    const touch = shouldTouch(current.id, other.id)
+    if (kind === 'contain' || kind === 'tangent') return null
+    if (touch) {
+      if (kind !== 'intersect') return null
+      link(current, other)
+    } else if (kind !== 'gap' || outlineGap(current, other) < minGap) {
+      return null
+    }
+  }
+
   return current
 }
 
@@ -774,7 +942,8 @@ function tryPlace(
   hex: HeroHex,
   placed: HeroHex[],
   minGap: number,
-  nestMin: number,
+  minCross: number,
+  minProtrude: number,
   zone: ExclusionZone | null,
 ): HeroHex | null {
   const homeX = hex.cx
@@ -796,35 +965,8 @@ function tryPlace(
 
   for (const next of tries) {
     if (inZone(next, zone)) continue
-    const settled = settleIndependent(next, placed, minGap, nestMin, zone)
-    if (settled) return settled
-  }
-  return null
-}
-
-function placeNested(
-  parent: HeroHex,
-  spec: HexNestSpec,
-  nestMin: number,
-): HeroHex | null {
-  const scale = spec.scale
-  let ox = spec.ox
-  let oy = spec.oy
-
-  for (let i = 0; i < 12; i++) {
-    const child = makeHex(
-      spec.id,
-      parent.cx + ox * parent.radius,
-      parent.cy + oy * parent.radius,
-      scale,
-      spec.depth,
-      spec.tint,
-      spec.finish ?? 'fill',
-      parent.id,
-    )
-    if (containmentClearance(parent, child) >= nestMin) return child
-    ox *= 0.82
-    oy *= 0.82
+    const resolved = resolveAgainstPlaced(next, placed, minGap, minCross, minProtrude, zone)
+    if (resolved) return resolved
   }
   return null
 }
@@ -832,21 +974,21 @@ function placeNested(
 function separateHexes(
   hexes: HeroHex[],
   minGap: number,
-  nestMin: number,
+  minCross: number,
+  minProtrude: number,
   zone: ExclusionZone | null,
 ): HeroHex[] {
-  let out = hexes.map((hex) => relocate(hex, hex.cx, hex.cy))
-  const hosts = independentsOf(out)
+  const out = hexes.map((hex) => relocate(hex, hex.cx, hex.cy))
 
   for (let iter = 0; iter < 8; iter++) {
     let moved = false
-    for (let i = 0; i < hosts.length; i++) {
-      for (let j = i + 1; j < hosts.length; j++) {
-        const a = out.find((hex) => hex.id === hosts[i].id)
-        const b = out.find((hex) => hex.id === hosts[j].id)
-        if (!a || !b) continue
+    for (let i = 0; i < out.length; i++) {
+      for (let j = i + 1; j < out.length; j++) {
+        const a = out[i]
+        const b = out[j]
+        if (linked(a, b) || shouldTouch(a.id, b.id)) continue
         const gap = outlineGap(a, b)
-        if (gap < 0 || gap >= minGap) continue
+        if (gap >= minGap) continue
 
         const aPoly = outlinePolygon(a, 'outer')
         const bPoly = outlinePolygon(b, 'outer')
@@ -854,34 +996,28 @@ function separateHexes(
         const need = Math.min(minGap - gap, 12)
         const tot = mobility(a) + mobility(b) || 1
 
-        const tryShift = (hex: HeroHex, dir: number) => {
+        const shift = (hex: HeroHex, dir: number) => {
           let dx = axis[0] * need * dir * (mobility(hex) / tot)
           const dy = axis[1] * need * dir * (mobility(hex) / tot)
           dx = dx < 0 ? dx * 0.12 : dx
           const next = relocate(hex, hex.cx + dx, hex.cy + dy)
-          if (inZone(next, zone)) return 0
-          const trial = moveHex(out, hex.id, dx, dy)
-          const movedHex = trial.find((item) => item.id === hex.id)
-          if (!movedHex) return 0
-          const others = trial.filter((item) => item.id !== hex.id && item.parentId !== hex.id)
-          if (!relationsHold(movedHex, others, minGap, nestMin)) return 0
-          for (const child of childrenOf(trial, hex.id)) {
-            if (!relationsHold(child, trial.filter((item) => item.id !== child.id), minGap, nestMin)) {
-              return 0
-            }
+          if (inZone(next, zone)) return hex
+          if (!canPlace(next, out.filter((item) => item.id !== hex.id), minGap, minCross, minProtrude)) {
+            return hex
           }
-          out = trial
-          return 1
+          return next
         }
 
-        if (tryShift(a, -1) || tryShift(b, 1)) moved = true
+        const nextA = shift(a, -1)
+        const nextB = shift(b, 1)
+        if (nextA !== a || nextB !== b) {
+          out[i] = nextA
+          out[j] = nextB
+          moved = true
+        }
       }
     }
     if (!moved) break
-    for (let k = 0; k < hosts.length; k++) {
-      const latest = out.find((hex) => hex.id === hosts[k].id)
-      if (latest) hosts[k] = latest
-    }
   }
 
   return out
@@ -891,8 +1027,8 @@ function preferMobile(a: HeroHex, b: HeroHex) {
   const score = (hex: HeroHex) => {
     let n = 200 / hex.radius
     if (hex.finish === 'line') n += 30
-    if (hex.parentId) n += 40
     if (hex.role === 'accent') n += 20
+    if (hex.intersectIds.length) n -= 15
     return n
   }
   return score(a) >= score(b) ? a : b
@@ -901,10 +1037,11 @@ function preferMobile(a: HeroHex, b: HeroHex) {
 function staggerAlignments(
   hexes: HeroHex[],
   minGap: number,
-  nestMin: number,
+  minCross: number,
+  minProtrude: number,
   zone: ExclusionZone | null,
 ): HeroHex[] {
-  let out = hexes.map((hex) => relocate(hex, hex.cx, hex.cy))
+  const out = hexes.map((hex) => relocate(hex, hex.cx, hex.cy))
   const steps = [14, 22, 34, 50, 68]
 
   for (let iter = 0; iter < 10; iter++) {
@@ -913,28 +1050,22 @@ function staggerAlignments(
       for (let j = i + 1; j < out.length; j++) {
         const a = out[i]
         const b = out[j]
-        if (nestedPair(a, b)) continue
         if (!nearbyHorizontally(a, b) || !sharedBand(a, b, HEX_ALIGN_TOL)) continue
 
         const sign = idHash(a.id + ':' + b.id) % 2 === 0 ? 1 : -1
         const ordered = [...steps.map((n) => sign * n), ...steps.map((n) => -sign * n)]
         const mobileFirst = preferMobile(a, b)
-        const ids = mobileFirst.id === a.id ? [a.id, b.id] : [b.id, a.id]
+        const indices = mobileFirst.id === a.id ? [i, j] : [j, i]
 
-        pair: for (const mobileId of ids) {
-          const mobile = out.find((hex) => hex.id === mobileId)
-          if (!mobile || mobile.parentId) continue
-          const other = mobileId === a.id ? b : a
+        pair: for (const mobileIdx of indices) {
+          const mobile = out[mobileIdx]
+          const other = mobileIdx === i ? b : a
           for (const dy of ordered) {
-            if (inZone(relocate(mobile, mobile.cx, mobile.cy + dy), zone)) continue
-            const trial = moveHex(out, mobile.id, 0, dy)
-            const next = trial.find((hex) => hex.id === mobile.id)
-            if (!next) continue
-            if (!relationsHold(next, trial.filter((hex) => hex.id !== next.id), minGap, nestMin)) {
-              continue
-            }
+            const next = relocate(mobile, mobile.cx, mobile.cy + dy)
+            if (inZone(next, zone)) continue
+            if (!relationsHold(next, out, minGap, minCross, minProtrude)) continue
             if (sharedBand(next, other, HEX_ALIGN_TOL)) continue
-            out = trial
+            out[mobileIdx] = next
             moved = true
             break pair
           }
@@ -953,7 +1084,8 @@ function placeField(
   bp: HexBreakpoint,
   zone: ExclusionZone,
   minGap: number,
-  nestMin: number,
+  minCross: number,
+  minProtrude: number,
 ): { placed: HeroHex[]; generated: number; rejected: number } {
   const { w, h } = HERO_HEX_FRAME
   const placed: HeroHex[] = []
@@ -989,37 +1121,24 @@ function placeField(
       hex = found
     }
 
-    const next = tryPlace(hex, placed, minGap, nestMin, zone)
+    const next = tryPlace(hex, placed, minGap, minCross, minProtrude, zone)
     if (!next) {
       rejected += 1
       continue
     }
     placed.push(next)
-
-    for (const nest of spec.nest ?? []) {
-      if (!visibleAt(nest.at, bp)) continue
-      generated += 1
-      const child = placeNested(next, {
-        ...nest,
-        scale: nest.scale * shrink,
-      }, nestMin)
-      if (!child) {
-        rejected += 1
-        continue
-      }
-      placed.push(child)
-    }
   }
 
-  const separated = separateHexes(placed, minGap, nestMin, zone)
-  const staggered = staggerAlignments(separated, minGap, nestMin, zone)
+  const separated = separateHexes(placed, minGap, minCross, minProtrude, zone)
+  const staggered = staggerAlignments(separated, minGap, minCross, minProtrude, zone)
   return { placed: staggered, generated, rejected }
 }
 
 export function validateHexLayout(
   hexes: HeroHex[],
   minGap: number,
-  nestMin: number,
+  minCross: number,
+  minProtrude: number,
 ): HexValidation {
   const violations: HexViolation[] = []
 
@@ -1027,25 +1146,26 @@ export function validateHexLayout(
     for (let j = i + 1; j < hexes.length; j++) {
       const a = hexes[i]
       const b = hexes[j]
-      const kind = classifyPair(a, b, minGap)
+      const kind = classifyPair(a, b, minGap, minCross, minProtrude)
+      const isLink = linked(a, b) || shouldTouch(a.id, b.id)
 
-      if (nestedPair(a, b)) {
-        const parent = a.parentId ? b : a
-        const child = a.parentId ? a : b
-        const room = containmentClearance(parent, child)
-        if (kind !== 'contain' || room < nestMin) {
-          violations.push({ type: 'nest', a: parent.id, b: child.id, room, min: nestMin })
+      if (kind === 'contain') {
+        violations.push({ type: 'containment', a: a.id, b: b.id })
+        continue
+      }
+
+      if (isLink) {
+        if (kind !== 'intersect') {
+          violations.push({ type: 'intersect', a: a.id, b: b.id, kind })
         }
         continue
       }
 
-      if (kind === 'contain') {
-        violations.push({ type: 'containment', a: a.id, b: b.id })
-      } else if (kind === 'intersect') {
+      if (kind === 'intersect') {
         violations.push({ type: 'overlap', a: a.id, b: b.id })
       } else if (kind === 'tangent') {
         violations.push({ type: 'tangent', a: a.id, b: b.id, gap: outlineGap(a, b) })
-      } else {
+      } else if (kind === 'gap') {
         const gap = outlineGap(a, b)
         if (gap < minGap) {
           violations.push({ type: 'gap', a: a.id, b: b.id, gap, min: minGap })
@@ -1067,7 +1187,7 @@ function independentMinGap(hexes: HeroHex[]) {
   let min = Infinity
   for (let i = 0; i < hexes.length; i++) {
     for (let j = i + 1; j < hexes.length; j++) {
-      if (nestedPair(hexes[i], hexes[j])) continue
+      if (linked(hexes[i], hexes[j])) continue
       const gap = outlineGap(hexes[i], hexes[j])
       if (gap < min) min = gap
     }
@@ -1075,15 +1195,35 @@ function independentMinGap(hexes: HeroHex[]) {
   return Number.isFinite(min) ? min : null
 }
 
+function intersectionCount(hexes: HeroHex[]) {
+  let n = 0
+  for (let i = 0; i < hexes.length; i++) {
+    for (let j = i + 1; j < hexes.length; j++) {
+      if (linked(hexes[i], hexes[j])) n += 1
+    }
+  }
+  return n
+}
+
+function touchingCount(hexes: HeroHex[]) {
+  return hexes.filter((hex) => hex.intersectIds.length > 0).length
+}
+
 function nestedCount(hexes: HeroHex[]) {
-  return hexes.filter((hex) => hex.parentId).length
+  let n = 0
+  for (let i = 0; i < hexes.length; i++) {
+    for (let j = i + 1; j < hexes.length; j++) {
+      if (containmentClearance(hexes[i], hexes[j]) >= 0) n += 1
+      else if (containmentClearance(hexes[j], hexes[i]) >= 0) n += 1
+    }
+  }
+  return n
 }
 
 function alignmentCount(hexes: HeroHex[]) {
   let n = 0
   for (let i = 0; i < hexes.length; i++) {
     for (let j = i + 1; j < hexes.length; j++) {
-      if (nestedPair(hexes[i], hexes[j])) continue
       if (nearbyHorizontally(hexes[i], hexes[j]) && sharedBand(hexes[i], hexes[j], HEX_ALIGN_TOL)) {
         n += 1
       }
@@ -1107,14 +1247,15 @@ export function layoutHexes(
   const shiftX = bp === 'mobile' ? 56 : bp === 'tablet' ? 22 : 0
   const targetGap = pxToView(HEX_TARGET_GAP, screenScale)
   const hardGap = pxToView(HEX_MIN_GAP, screenScale)
-  const nestMin = pxToView(HEX_NEST_CLEARANCE, screenScale)
+  const minCross = pxToView(HEX_CROSS_MIN, screenScale)
+  const minProtrude = pxToView(HEX_PROTRUDE_MIN, screenScale)
 
-  const field = placeField(shrink, shiftX, bp, zone, targetGap, nestMin)
+  const field = placeField(shrink, shiftX, bp, zone, targetGap, minCross, minProtrude)
   const faded = field.placed.map((hex) => ({
     ...hex,
     opacity: composeOpacity(hex, zone),
   }))
-  const validation = validateHexLayout(faded, hardGap, nestMin)
+  const validation = validateHexLayout(faded, hardGap, minCross, minProtrude)
   const minGap = independentMinGap(faded)
   const opacities = faded.map((hex) => hex.opacity)
 
@@ -1123,6 +1264,8 @@ export function layoutHexes(
     placed: faded.length,
     rejected: field.rejected,
     clipped: faded.filter(isClipped).length,
+    intersections: intersectionCount(faded),
+    touching: touchingCount(faded),
     nested: nestedCount(faded),
     alignments: alignmentCount(faded),
     ids: faded.map((hex) => hex.id),
@@ -1157,10 +1300,13 @@ export function layoutsEqual(a: HeroHex[], b: HeroHex[]) {
       x.depth !== y.depth ||
       x.tint !== y.tint ||
       x.finish !== y.finish ||
-      x.parentId !== y.parentId ||
       x.opacity !== y.opacity
     ) {
       return false
+    }
+    if (x.intersectIds.length !== y.intersectIds.length) return false
+    for (let k = 0; k < x.intersectIds.length; k++) {
+      if (x.intersectIds[k] !== y.intersectIds[k]) return false
     }
   }
   return true
@@ -1173,8 +1319,6 @@ const DEPTH_ORDER: Record<HexDepth, number> = {
 }
 
 export function paintOrder(a: HeroHex, b: HeroHex) {
-  if (a.parentId === b.id) return 1
-  if (b.parentId === a.id) return -1
   const size = b.radius - a.radius
   if (Math.abs(size) > 2) return size
   const finish = Number(a.finish === 'line') - Number(b.finish === 'line')

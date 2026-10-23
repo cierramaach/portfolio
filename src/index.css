@@ -12,6 +12,7 @@
   --aperture: #0b0b0b;
   --hold: color-mix(in srgb, var(--paper) 58%, transparent);
   --hero: var(--ivory);
+  --index-field: #fafaf8;
   --bar-ink: var(--ivory);
   --serif: 'Cormorant Garamond', 'Iowan Old Style', Palatino, Georgia, serif;
   --sans: 'Manrope', 'Segoe UI', system-ui, sans-serif;
@@ -212,8 +213,8 @@ main {
   z-index: 1;
   width: max-content;
   max-width: 100%;
-  padding: clamp(1.5rem, 6vh, 4rem) var(--hero-pad);
-  align-self: center;
+  padding: clamp(4.5rem, 12vh, 7rem) var(--hero-pad) clamp(1.5rem, 6vh, 4rem);
+  align-self: start;
 }
 
 .hero-bar {
@@ -384,7 +385,7 @@ main {
   grid-column: 1 / -1;
   grid-row: 1 / -1;
   right: var(--hero-pad);
-  bottom: clamp(1.45rem, 4.2vh, 2.55rem);
+  bottom: clamp(0.95rem, 3vh, 1.85rem);
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
@@ -589,6 +590,7 @@ main {
   width: min(100%, var(--page));
   min-height: auto;
   margin-inline: auto;
+  background: var(--index-field);
 }
 
 .jacket {
@@ -696,7 +698,7 @@ a.close-link:focus-visible {
   width: min(100%, var(--page));
   margin-inline: auto;
   padding: 6vh clamp(1.4rem, 7.5vw, 7.25rem) 12vh;
-  background: var(--paper);
+  background: var(--index-field);
   scroll-margin-top: var(--bar);
 }
 
@@ -1080,6 +1082,7 @@ a.effort-title:hover {
     width: 100%;
     max-width: none;
     padding: 1.5rem var(--hero-pad) 1.25rem;
+    align-self: center;
   }
 
   .hero-lead {
@@ -1110,7 +1113,7 @@ a.effort-title:hover {
   .hero-next {
     left: var(--hero-pad);
     right: auto;
-    bottom: clamp(1.2rem, 3.8vh, 1.9rem);
+    bottom: clamp(0.85rem, 2.8vh, 1.45rem);
   }
 
   .aperture-bleed,
