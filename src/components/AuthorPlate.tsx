@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { useEditor } from '../lib/content'
 import { Editable } from './Editable'
 import { HeroHexes } from './HeroHexes'
@@ -7,12 +7,31 @@ export function AuthorPlate() {
   const { site, update } = useEditor()
   const [lead, mid, end] = site.identity.roles
   const [lockup, setLockup] = useState<HTMLDivElement | null>(null)
+  const [copyIn, setCopyIn] = useState(false)
+
+  useLayoutEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (reduce.matches) {
+      setCopyIn(true)
+      return
+    }
+    let cancelled = false
+    const outer = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (!cancelled) setCopyIn(true)
+      })
+    })
+    return () => {
+      cancelled = true
+      cancelAnimationFrame(outer)
+    }
+  }, [])
 
   return (
     <section id="plate" className="hero" aria-labelledby="hero-title">
       <HeroHexes lockup={lockup} />
 
-      <div className="hero-lockup" ref={setLockup}>
+      <div className={copyIn ? 'hero-lockup is-in' : 'hero-lockup'} ref={setLockup}>
         <h1 id="hero-title" className="hero-title">
           <Editable
             className="hero-line hero-lead"
