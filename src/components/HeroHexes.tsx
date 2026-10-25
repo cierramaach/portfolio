@@ -2,12 +2,14 @@ import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from '
 import {
   HERO_HEX_FRAME,
   HEX_LOOK,
+  HEX_SURFACE_SRC,
   HEX_UNIT,
   HEX_EXCLUSION_MARGIN,
   hexFace,
   layoutHexes,
   layoutsEqual,
   paintOrder,
+  textureWindow,
   type ExclusionZone,
   type HeroHex,
 } from '../data/heroHex'
@@ -122,19 +124,63 @@ function entranceStyle(hex: HeroHex): CSSProperties {
   }
 }
 
+function strokeOf(hex: HeroHex, line: boolean) {
+  const look = HEX_LOOK[hex.tint][hex.depth]
+  const base = line ? look.strokeWidth * 1.35 : look.strokeWidth
+  if (hex.outline === 'foil') {
+    return {
+      stroke: 'url(#hero-foil-outline)',
+      strokeWidth: line ? Math.max(base, 2.2) : Math.max(base * 1.75, 1.7),
+    }
+  }
+  return { stroke: look.stroke, strokeWidth: base }
+}
+
 function HexCell({ hex }: { hex: HeroHex }) {
   const look = HEX_LOOK[hex.tint][hex.depth]
   const line = hex.finish === 'line'
+  const face = points(hexFace(hex.cx, hex.cy, hex.radius))
+  const rim = strokeOf(hex, line)
+
+  if (line || hex.surface === 'paper') {
+    return (
+      <polygon
+        className="hero-hexes__cell"
+        points={face}
+        fill={line ? 'none' : look.face}
+        stroke={rim.stroke}
+        strokeWidth={rim.strokeWidth}
+        strokeLinejoin="round"
+        style={entranceStyle(hex)}
+      />
+    )
+  }
+
+  const crop = textureWindow(hex)
+  const clipId = `hero-hex-clip-${hex.id}`
   return (
-    <polygon
-      className="hero-hexes__cell"
-      points={points(hexFace(hex.cx, hex.cy, hex.radius))}
-      fill={line ? 'none' : look.face}
-      stroke={look.stroke}
-      strokeWidth={line ? look.strokeWidth * 1.35 : look.strokeWidth}
-      strokeLinejoin="round"
-      style={entranceStyle(hex)}
-    />
+    <g className="hero-hexes__cell" style={entranceStyle(hex)}>
+      <clipPath id={clipId}>
+        <polygon points={face} />
+      </clipPath>
+      <polygon points={face} fill={look.face} stroke="none" />
+      <image
+        href={HEX_SURFACE_SRC[hex.surface]}
+        x={crop.x}
+        y={crop.y}
+        width={crop.size}
+        height={crop.size}
+        preserveAspectRatio="xMidYMid slice"
+        clipPath={`url(#${clipId})`}
+      />
+      <polygon
+        points={face}
+        fill="none"
+        stroke={rim.stroke}
+        strokeWidth={rim.strokeWidth}
+        strokeLinejoin="round"
+      />
+    </g>
   )
 }
 
@@ -206,9 +252,13 @@ export function HeroHexes({ lockup }: HeroHexesProps) {
         if (!cancelled) setArrived(true)
       })
     })
+    const fallback = window.setTimeout(() => {
+      if (!cancelled) setArrived(true)
+    }, 160)
     return () => {
       cancelled = true
       cancelAnimationFrame(outer)
+      window.clearTimeout(fallback)
     }
   }, [cells, arrived])
 
@@ -223,6 +273,23 @@ export function HeroHexes({ lockup }: HeroHexesProps) {
         preserveAspectRatio="xMaxYMid slice"
         fill="none"
       >
+        <defs>
+          <pattern
+            id="hero-foil-outline"
+            patternUnits="userSpaceOnUse"
+            width="180"
+            height="180"
+          >
+            <image
+              href={HEX_SURFACE_SRC.foil}
+              x="0"
+              y="0"
+              width="180"
+              height="180"
+              preserveAspectRatio="xMidYMid slice"
+            />
+          </pattern>
+        </defs>
         {ordered.map((hex) => (
           <HexCell key={hex.id} hex={hex} />
         ))}

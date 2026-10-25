@@ -36,8 +36,18 @@ export type HexRole = 'anchor' | 'support' | 'accent'
 export type HexDepth = 'recessed' | 'field' | 'raised'
 export type HexTint = 'ivory' | 'slate' | 'silver'
 export type HexFinish = 'fill' | 'line'
+export type HexOutline = 'silver' | 'foil'
 export type HexBreakpoint = 'desktop' | 'tablet' | 'mobile'
 export type HexPairKind = 'gap' | 'intersect' | 'contain' | 'tangent'
+export type HexSurface =
+  | 'paper'
+  | 'agate'
+  | 'gold'
+  | 'marble'
+  | 'cream'
+  | 'swirl'
+  | 'calacatta'
+  | 'foil'
 
 export type HeroHex = {
   id: string
@@ -50,9 +60,24 @@ export type HeroHex = {
   depth: HexDepth
   tint: HexTint
   finish: HexFinish
+  surface: HexSurface
+  outline: HexOutline
   opacity: number
   intersectIds: string[]
 }
+
+/** Public texture plates. Paper faces stay HEX_LOOK fills. */
+export const HEX_SURFACE_SRC: Record<Exclude<HexSurface, 'paper'>, string> = {
+  agate: '/hero/agate.jpg',
+  gold: '/hero/gold.jpg',
+  marble: '/hero/marble.jpg',
+  cream: '/hero/cream.jpg',
+  swirl: '/hero/swirl.jpg',
+  calacatta: '/hero/calacatta.jpg',
+  foil: '/hero/foil.jpg',
+}
+
+const HEX_SOLID_SURFACE = new Set<HexSurface>(['agate', 'gold', 'marble', 'calacatta'])
 
 export type ExclusionZone = {
   x: number
@@ -102,6 +127,8 @@ type HexCellSpec = {
   depth: HexDepth
   tint: HexTint
   finish?: HexFinish
+  surface?: HexSurface
+  outline?: HexOutline
   at?: readonly HexBreakpoint[]
   /** Other cell ids this hex should rim-cut. Never nested. */
   touch?: readonly string[]
@@ -114,7 +141,10 @@ type HexCellSpec = {
  * and silver cells cut their rims. Mid-field forms step toward the type
  * as real hexes, not specks. Most hexes share an authored intersection.
  * None sit inside another. Independent neighbors keep a paper gap.
- * Fade floors at 50% opacity.
+ * Fade floors at 50% opacity. Dark texture is authored, rare, and east-weighted:
+ * marble for weight, agate for bite, gold for one or two jewels.
+ * A few paper faces take quiet ivory marble. Line hexes and the large
+ * south face stay as they are.
  */
 export const HEX_FIELD = {
   fade: {
@@ -131,6 +161,7 @@ export const HEX_FIELD = {
       scale: 1.82,
       depth: 'recessed',
       tint: 'ivory',
+      surface: 'swirl',
     },
     {
       id: 'north-ghost',
@@ -140,6 +171,7 @@ export const HEX_FIELD = {
       depth: 'field',
       tint: 'silver',
       finish: 'line',
+      outline: 'foil',
       at: ['desktop'],
       touch: ['north'],
     },
@@ -150,6 +182,8 @@ export const HEX_FIELD = {
       scale: 0.46,
       depth: 'raised',
       tint: 'ivory',
+      finish: 'line',
+      outline: 'foil',
       at: ['desktop', 'tablet'],
       touch: ['north'],
     },
@@ -161,6 +195,7 @@ export const HEX_FIELD = {
       scale: 1.16,
       depth: 'raised',
       tint: 'ivory',
+      surface: 'marble',
       at: ['desktop', 'tablet'],
       touch: ['north'],
     },
@@ -172,6 +207,7 @@ export const HEX_FIELD = {
       scale: 0.96,
       depth: 'field',
       tint: 'slate',
+      surface: 'cream',
       touch: ['north', 'north-cut'],
     },
     {
@@ -183,6 +219,7 @@ export const HEX_FIELD = {
       depth: 'recessed',
       tint: 'ivory',
       finish: 'line',
+      outline: 'foil',
       at: ['desktop'],
       touch: ['north-arm'],
     },
@@ -193,6 +230,7 @@ export const HEX_FIELD = {
       scale: 0.88,
       depth: 'recessed',
       tint: 'ivory',
+      surface: 'calacatta',
       at: ['desktop', 'tablet'],
       touch: ['north-arm'],
     },
@@ -204,6 +242,7 @@ export const HEX_FIELD = {
       scale: 0.76,
       depth: 'recessed',
       tint: 'ivory',
+      surface: 'agate',
       at: ['desktop', 'tablet'],
       touch: ['high-slate'],
     },
@@ -227,6 +266,7 @@ export const HEX_FIELD = {
       depth: 'field',
       tint: 'silver',
       finish: 'line',
+      outline: 'foil',
       touch: ['east-cut'],
     },
     {
@@ -247,6 +287,7 @@ export const HEX_FIELD = {
       scale: 0.84,
       depth: 'raised',
       tint: 'silver',
+      surface: 'marble',
       touch: ['south-cut'],
     },
     {
@@ -256,6 +297,7 @@ export const HEX_FIELD = {
       scale: 0.82,
       depth: 'recessed',
       tint: 'ivory',
+      surface: 'cream',
       at: ['desktop'],
       touch: ['south'],
     },
@@ -267,6 +309,7 @@ export const HEX_FIELD = {
       scale: 1.58,
       depth: 'raised',
       tint: 'ivory',
+      surface: 'calacatta',
       at: ['desktop', 'tablet'],
     },
     {
@@ -276,6 +319,7 @@ export const HEX_FIELD = {
       scale: 0.98,
       depth: 'field',
       tint: 'ivory',
+      surface: 'marble',
       at: ['desktop', 'tablet'],
       touch: ['south'],
     },
@@ -286,6 +330,7 @@ export const HEX_FIELD = {
       scale: 1.12,
       depth: 'field',
       tint: 'slate',
+      surface: 'cream',
       touch: ['south', 'bottom'],
     },
     {
@@ -295,16 +340,89 @@ export const HEX_FIELD = {
       scale: 0.86,
       depth: 'recessed',
       tint: 'silver',
+      outline: 'foil',
       at: ['desktop', 'tablet'],
       touch: ['south-arm'],
     },
     {
+      id: 'high-pocket',
+      nx: 0.658,
+      ny: 0.742,
+      lift: -5,
+      scale: 0.46,
+      depth: 'field',
+      tint: 'ivory',
+      surface: 'cream',
+      at: ['desktop'],
+      touch: ['west-taper'],
+    },
+    {
+      id: 'high-rim',
+      nx: 0.642,
+      ny: 0.812,
+      lift: 3,
+      scale: 0.44,
+      depth: 'field',
+      tint: 'ivory',
+      finish: 'line',
+      at: ['desktop'],
+      touch: ['low-taper'],
+    },
+    {
+      id: 'high-dot',
+      nx: 0.628,
+      ny: 0.905,
+      lift: -4,
+      scale: 0.38,
+      depth: 'recessed',
+      tint: 'ivory',
+      surface: 'swirl',
+      at: ['desktop'],
+      touch: ['low-taper'],
+    },
+    {
+      id: 'field-anchor',
+      nx: 0.608,
+      ny: 0.738,
+      lift: 2,
+      scale: 0.96,
+      depth: 'recessed',
+      tint: 'ivory',
+      at: ['desktop'],
+      touch: ['high-pocket'],
+    },
+    {
+      id: 'field-cut',
+      nx: 0.592,
+      ny: 0.855,
+      lift: -3,
+      scale: 0.7,
+      depth: 'field',
+      tint: 'ivory',
+      surface: 'cream',
+      at: ['desktop'],
+      touch: ['field-anchor'],
+    },
+    {
+      id: 'field-line',
+      nx: 0.568,
+      ny: 0.958,
+      lift: 4,
+      scale: 0.5,
+      depth: 'field',
+      tint: 'ivory',
+      finish: 'line',
+      at: ['desktop'],
+      touch: ['field-cut'],
+    },
+    {
       id: 'bottom',
       nx: 0.86,
-      ny: 0.98,
+      ny: 1.06,
       scale: 1.68,
       depth: 'recessed',
       tint: 'ivory',
+      surface: 'marble',
     },
     {
       id: 'bottom-cut',
@@ -317,14 +435,49 @@ export const HEX_FIELD = {
       touch: ['bottom'],
     },
     {
+      id: 'low-nub',
+      nx: 0.748,
+      ny: 0.99,
+      lift: 2,
+      scale: 0.4,
+      depth: 'field',
+      tint: 'ivory',
+      finish: 'line',
+      at: ['desktop'],
+      touch: ['bottom'],
+    },
+    {
+      id: 'low-chip',
+      nx: 0.692,
+      ny: 0.958,
+      lift: -3,
+      scale: 0.36,
+      depth: 'recessed',
+      tint: 'ivory',
+      surface: 'cream',
+      at: ['desktop'],
+      touch: ['bottom'],
+    },
+    {
+      id: 'low-speck',
+      nx: 0.805,
+      ny: 1.145,
+      scale: 0.34,
+      depth: 'raised',
+      tint: 'ivory',
+      surface: 'swirl',
+      at: ['desktop'],
+      touch: ['bottom'],
+    },
+    {
       id: 'rim-ghost',
       nx: 1.01,
       ny: 0.88,
       lift: -2,
       scale: 0.42,
       depth: 'raised',
-      tint: 'silver',
-      finish: 'line',
+      tint: 'ivory',
+      surface: 'gold',
       at: ['desktop', 'tablet'],
       touch: ['low-slate'],
     },
@@ -336,6 +489,7 @@ export const HEX_FIELD = {
       scale: 0.86,
       depth: 'recessed',
       tint: 'ivory',
+      surface: 'agate',
       at: ['desktop'],
       touch: ['high-step', 'mid-step'],
     },
@@ -346,6 +500,7 @@ export const HEX_FIELD = {
       scale: 0.8,
       depth: 'field',
       tint: 'silver',
+      surface: 'cream',
       at: ['desktop'],
       touch: ['south', 'south-cut', 'mid-fill'],
     },
@@ -595,6 +750,8 @@ function makeHex(
   depth: HexDepth,
   tint: HexTint,
   finish: HexFinish = 'fill',
+  surface: HexSurface = 'paper',
+  outline: HexOutline = 'silver',
 ): HeroHex {
   const radius = HEX_UNIT * scale
   const w = radius * 2
@@ -609,6 +766,8 @@ function makeHex(
     depth,
     tint,
     finish,
+    surface: finish === 'line' ? 'paper' : surface,
+    outline,
     opacity: 1,
     intersectIds: [],
   }
@@ -695,6 +854,7 @@ function copyProximity(hex: HeroHex, zone: ExclusionZone) {
 }
 
 function composeOpacity(hex: HeroHex, zone: ExclusionZone) {
+  if (HEX_SOLID_SURFACE.has(hex.surface)) return 1
   const { w } = HERO_HEX_FRAME
   const { floor, range, west, westSpan } = HEX_FIELD.fade
   const dist = Math.max(0, copyProximity(hex, zone))
@@ -751,6 +911,21 @@ function idHash(id: string) {
     n = Math.imul(n, 16777619)
   }
   return n >>> 0
+}
+
+/** Deterministic crop window so sibling faces never share the same sticker. */
+export function textureWindow(hex: HeroHex) {
+  const n = idHash(hex.id)
+  const zoom = 1.58 + ((n % 92) / 100)
+  const size = hex.w * zoom
+  const slack = Math.max(size - hex.w, 1)
+  const tx = ((n >>> 5) % 1000) / 999
+  const ty = ((n >>> 15) % 1000) / 999
+  return {
+    x: hex.cx - size / 2 + (tx - 0.5) * slack * 0.92,
+    y: hex.cy - size / 2 + (ty - 0.5) * slack * 0.92,
+    size,
+  }
 }
 
 function inZone(hex: HeroHex, zone: ExclusionZone | null) {
@@ -1103,6 +1278,8 @@ function placeField(
       spec.depth,
       spec.tint,
       spec.finish ?? 'fill',
+      spec.surface ?? 'paper',
+      spec.outline ?? 'silver',
     )
 
     if (inZone(hex, zone)) {
@@ -1251,10 +1428,11 @@ export function layoutHexes(
   const minProtrude = pxToView(HEX_PROTRUDE_MIN, screenScale)
 
   const field = placeField(shrink, shiftX, bp, zone, targetGap, minCross, minProtrude)
-  const faded = field.placed.map((hex) => ({
-    ...hex,
-    opacity: composeOpacity(hex, zone),
-  }))
+  const faded = field.placed.map((hex) => {
+    const blocked = hex.surface !== 'paper' && hexHitsZone(hex, zone)
+    const next = blocked ? { ...hex, surface: 'paper' as const } : hex
+    return { ...next, opacity: composeOpacity(next, zone) }
+  })
   const validation = validateHexLayout(faded, hardGap, minCross, minProtrude)
   const minGap = independentMinGap(faded)
   const opacities = faded.map((hex) => hex.opacity)
@@ -1300,6 +1478,8 @@ export function layoutsEqual(a: HeroHex[], b: HeroHex[]) {
       x.depth !== y.depth ||
       x.tint !== y.tint ||
       x.finish !== y.finish ||
+      x.surface !== y.surface ||
+      x.outline !== y.outline ||
       x.opacity !== y.opacity
     ) {
       return false

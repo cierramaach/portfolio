@@ -71,15 +71,17 @@ export function AuthorPlate() {
         Index
         <svg
           className="hero-next-icon"
-          viewBox="0 0 12 8"
+          viewBox="0 0 14 9"
           aria-hidden="true"
           focusable="false"
         >
           <path
-            d="M1 1.5 L6 6.5 L11 1.5"
+            d="M1 2 L7 7.2 L13 2"
             fill="none"
             stroke="currentColor"
-            strokeWidth="1.2"
+            strokeWidth="1.35"
+            strokeLinecap="square"
+            strokeLinejoin="miter"
           />
         </svg>
       </a>
